@@ -1,65 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Property Tour — Rod2Reel</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<div class="btn-container">
+    <a href="#" id="textBtn" class="btn btn-main">TEXT AGENT</a>
+    
+    <div class="btn-split">
+        <a href="#" id="callBtn" class="btn btn-secondary">CALL</a>
+        <button onclick="addToHome()" class="btn btn-secondary">SAVE LISTING</button>
+    </div>
+</div>
+
 <style>
-:root { --green: #0A5C1A; --bg: #0A5C1A; --surface: #126b23; --text: #FFFFFF; --border: rgba(255,255,255,0.2); }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); font-family:'Inter', sans-serif; color:var(--text); min-height:100vh; text-align:center; }
-.header { padding:40px 20px 20px; border-bottom:1px solid var(--border); }
-.brand { font-family:'Bebas Neue'; font-size:42px; letter-spacing:2px; margin-bottom:4px; }
-.property-name { font-size:18px; font-weight:400; opacity:0.9; margin-bottom:10px; }
-.content { max-width:480px; margin:0 auto; padding:20px 16px; }
-.video-wrap { position:relative; border-radius:16px; overflow:hidden; background:#000; box-shadow:0 20px 50px rgba(0,0,0,0.4); margin-bottom:20px; }
-video { width:100%; display:block; }
-.dl-overlay { position:absolute; bottom:12px; right:12px; background:rgba(0,0,0,0.7); padding:8px 12px; border-radius:8px; font-size:12px; color:#fff; text-decoration:none; border:1px solid var(--border); }
-.spec-box { display:grid; grid-template-columns:1fr 1fr; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:20px; }
-.spec-item { display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; }
-.btn { display:block; background:#fff; color:var(--green); padding:18px; border-radius:12px; text-decoration:none; font-weight:700; margin-bottom:10px; font-size:15px; transition:0.2s; }
-.btn:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.2); }
-.agent-photo { width:90px; height:90px; border-radius:50%; object-fit:cover; margin:20px auto 10px; border:3px solid #fff; display:block; }
-.footer { padding:40px 20px; font-size:10px; letter-spacing:2px; opacity:0.7; text-transform:uppercase; }
+.btn-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+    height: 55px; /* Consistent height */
+}
+
+.btn-main {
+    background: #ffffff;
+    color: #0A5C1A;
+    width: 100%;
+    font-size: 16px;
+}
+
+.btn-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
 </style>
-</head>
-<body>
-<div class="header">
-    <div class="brand" id="brandTitle">PROPERTY LISTING</div>
-    <div class="property-name" id="propAddress">Loading Address...</div>
-</div>
-<div class="content">
-    <div class="video-wrap">
-        <video id="mainVideo" controls playsinline></video>
-        <a id="dlVideo" href="#" class="dl-overlay" download>⬇ DOWNLOAD REEL</a>
-    </div>
-    <div class="spec-box">
-        <div class="spec-item">💰 <span id="price">-</span></div>
-        <div class="spec-item">📏 <span id="size">-</span></div>
-        <div class="spec-item">🛏️ <span id="beds">-</span></div>
-        <div class="spec-item">🚿 <span id="baths">-</span></div>
-    </div>
-    <a href="#" id="textBtn" class="btn">TEXT AGENT</a>
-    <a href="#" id="callBtn" class="btn">CALL AGENT</a>
-    <img src="" id="agentImg" class="agent-photo" style="display:none;">
-    <div class="footer">Powered by Rod2Reel</div>
-</div>
+
 <script>
-    const p = new URLSearchParams(window.location.search);
-    document.getElementById('brandTitle').innerText = p.get('Charter_Name') || 'PROPERTY LISTING';
-    document.getElementById('propAddress').innerText = p.get('Property_Name') || 'Featured Listing';
-    document.getElementById('mainVideo').src = p.get('video');
-    document.getElementById('dlVideo').href = p.get('video');
-    document.getElementById('price').innerText = p.get('PRICE') || '-';
-    document.getElementById('size').innerText = p.get('SIZE') || '-';
-    document.getElementById('beds').innerText = p.get('BEDROOMS') || '-';
-    document.getElementById('baths').innerText = p.get('BATHROOMS') || '-';
-    if(p.get('Agents_Photo')) { const img = document.getElementById('agentImg'); img.src = p.get('Agents_Photo'); img.style.display = 'block'; }
-    if(p.get('Phone_Number')) {
-        document.getElementById('textBtn').href = `sms:${p.get('Phone_Number')}`;
-        document.getElementById('callBtn').href = `tel:${p.get('Phone_Number')}`;
-    }
+function addToHome() {
+    alert("To save this listing:\n1. Tap the 'Share' icon (bottom of screen)\n2. Select 'Add to Home Screen'\n\nThis will keep the property video and agent contact on your phone!");
+}
 </script>
-</body>
-</html>
