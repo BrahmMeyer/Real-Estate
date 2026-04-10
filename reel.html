@@ -1,59 +1,78 @@
-<div class="btn-container">
-    <a href="#" id="textBtn" class="btn btn-main">TEXT AGENT</a>
-    
-    <div class="btn-split">
-        <a href="#" id="callBtn" class="btn btn-secondary">CALL</a>
-        <button onclick="addToHome()" class="btn btn-secondary">SAVE LISTING</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Property Highlight Reel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --emerald: #0A5C1A; --dark-bg: #080808; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 0; background-color: var(--dark-bg); font-family: 'Inter', sans-serif; color: white; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 500px; padding: 20px; }
+        .property-header { text-align: center; margin-bottom: 25px; padding: 0 10px; }
+        #propertyNameDisplay { font-size: 24px; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2; }
+        #listingPriceDisplay { color: var(--emerald); font-weight: 700; font-size: 18px; margin-top: 8px; }
+        .video-container { position: relative; width: 100%; aspect-ratio: 9/16; background: #000; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid var(--border); }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px; padding: 20px; background: var(--glass); border-radius: 20px; border: 1px solid var(--border); }
+        .spec-item span { display: block; font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; }
+        .spec-item strong { display: block; font-size: 15px; margin-top: 4px; }
+        .features-box { margin-top: 20px; padding: 0 10px; }
+        .features-box p { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.8); font-style: italic; }
+        .btn-container { display: flex; flex-direction: column; gap: 12px; margin-top: 30px; }
+        .btn-main { background: #fff; color: var(--emerald); height: 60px; border-radius: 16px; text-decoration: none; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .btn-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-sub { background: var(--glass); color: #fff; height: 50px; border-radius: 14px; text-decoration: none; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); }
+        .agent-footer { margin-top: 40px; padding-bottom: 50px; text-align: center; }
+        .agent-photo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--emerald); object-fit: cover; margin-bottom: 15px; }
+        .agent-name { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; opacity: 0.7; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="property-header">
+        <h1 id="propertyNameDisplay">LOADING ADDRESS...</h1>
+        <div id="listingPriceDisplay">$--,---</div>
+    </div>
+    <div class="video-container">
+        <video id="mainVideo" controls playsinline><source src="" type="video/mp4"></video>
+    </div>
+    <div class="spec-grid">
+        <div class="spec-item"><span>Acres</span><strong id="acresDisplay">--</strong></div>
+        <div class="spec-item"><span>Sq Footage</span><strong id="sqftDisplay">--</strong></div>
+        <div class="spec-item"><span>Bedrooms</span><strong id="bedsDisplay">--</strong></div>
+        <div class="spec-item"><span>Bathrooms</span><strong id="bathsDisplay">--</strong></div>
+    </div>
+    <div class="features-box"><p id="featuresDisplay">"Experience luxury living at its finest."</p></div>
+    <div class="btn-container">
+        <a href="#" id="textBtn" class="btn-main">TEXT AGENT</a>
+        <div class="btn-split">
+            <a href="#" id="callBtn" class="btn-sub">CALL</a>
+            <button onclick="addToHome()" class="btn-sub">SAVE PAGE</button>
+        </div>
+    </div>
+    <div class="agent-footer">
+        <img src="" id="agentImg" class="agent-photo" style="display:none;">
+        <div class="agent-name" id="agentNameDisplay">LISTING AGENT</div>
     </div>
 </div>
-
-<style>
-.btn-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    font-weight: 700;
-    text-decoration: none;
-    transition: 0.2s;
-    height: 55px; /* Consistent height */
-}
-
-.btn-main {
-    background: #ffffff;
-    color: #0A5C1A;
-    width: 100%;
-    font-size: 16px;
-}
-
-.btn-split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.btn-secondary {
-    background: rgba(255, 255, 255, 0.15);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    font-size: 14px;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    opacity: 0.9;
-}
-</style>
-
 <script>
-function addToHome() {
-    alert("To save this listing:\n1. Tap the 'Share' icon (bottom of screen)\n2. Select 'Add to Home Screen'\n\nThis will keep the property video and agent contact on your phone!");
-}
+    const params = new URLSearchParams(window.location.search);
+    const rawName = params.get('name') || 'Exclusive Listing';
+    document.getElementById('propertyNameDisplay').innerText = rawName.replace(/-/g, ' '); 
+    document.getElementById('listingPriceDisplay').innerText = params.get('price') || 'Contact for Price';
+    document.getElementById('acresDisplay').innerText = params.get('acres') || '--';
+    document.getElementById('sqftDisplay').innerText = params.get('sqft') || '--';
+    document.getElementById('bedsDisplay').innerText = params.get('beds') || '--';
+    document.getElementById('bathsDisplay').innerText = params.get('baths') || '--';
+    if(params.get('features')) document.getElementById('featuresDisplay').innerText = `"${params.get('features')}"`;
+    if(params.get('video')) { const v = document.getElementById('mainVideo'); v.src = params.get('video'); v.load(); }
+    if(params.get('photo')) { const i = document.getElementById('agentImg'); i.src = params.get('photo'); i.style.display = 'inline-block'; }
+    const phone = params.get('phone') || '';
+    document.getElementById('textBtn').href = `sms:${phone}`;
+    document.getElementById('callBtn').href = `tel:${phone}`;
+    function addToHome() { alert("📲 SAVE LISTING\n\n1. Tap 'Share'\n2. Select 'Add to Home Screen'"); }
 </script>
+</body>
+</html>
