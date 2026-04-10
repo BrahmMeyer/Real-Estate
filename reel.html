@@ -6,63 +6,56 @@
     <title>Property Showcase</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --glass: rgba(255, 255, 255, 0.12); --border: rgba(255, 255, 255, 0.15); }
-        
-        /* Reset defaults to kill all hidden margins */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root { --glass: rgba(255, 255, 255, 0.12); --border: rgba(255, 255, 255, 0.18); }
+        * { box-sizing: border-box; }
         body, html { margin: 0; padding: 0; background: #000; font-family: 'Inter', sans-serif; color: white; width: 100%; overflow-x: hidden; }
 
-        /* ZILLOW BLUR BACKGROUND */
+        /* BLUR BG */
         .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
         #bgBlur { width: 120%; height: 120%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.35); transform: translate(-10%, -10%); }
 
-        .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 15px; position: relative; }
+        .container { width: 100%; max-width: 480px; margin: 0 auto; padding: 15px; }
 
-        /* PROPERTY ADDRESS */
-        .address-top { text-align: center; font-size: 12px; color: #bbb; text-transform: uppercase; letter-spacing: 2px; margin: 10px 0 20px 0; font-weight: 600; }
+        .address-top { text-align: center; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 2.5px; margin: 10px 0 20px 0; font-weight: 600; }
 
-        /* THE FIX: KILLING BLACK BARS */
+        /* VIDEO - NO BLACK BARS */
         .video-container {
-            width: 100%;
-            position: relative;
-            background: #000;
-            border-radius: 28px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-            border: 1px solid var(--border);
-            line-height: 0; 
-            font-size: 0;
+            width: 100%; position: relative; background: #000; border-radius: 28px;
+            overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            border: 1px solid var(--border); line-height: 0; 
         }
-        
-        video {
-            width: 101%; /* Slight over-width to ensure edge-to-edge */
-            height: auto;
-            display: block;
-            margin: 0;
-            padding: 0;
-            object-fit: cover; /* Forces the video to fill its 9:16 frame */
+        video { width: 100%; height: auto; display: block; object-fit: cover; }
+
+        /* BUTTON ROW DIRECTLY BELOW VIDEO */
+        .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .btn { 
+            display: flex; align-items: center; justify-content: center;
+            height: 55px; border-radius: 14px; text-decoration: none; 
+            font-weight: 800; font-size: 12px; text-align: center;
+            /* SUBTLE GREEN/WHITE GRADIENT */
+            background: linear-gradient(135deg, #ffffff 0%, #e8f5e9 100%);
+            color: #0A5C1A;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.4);
         }
 
-        /* INFO CARD */
         .info-card {
             background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-radius: 24px; border: 1px solid var(--border);
             padding: 24px; margin: 25px 0; text-align: center;
         }
-        .price { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 20px; letter-spacing: -0.5px; }
+        .price { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 20px; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .stat-box { background: rgba(0,0,0,0.3); padding: 12px 5px; border-radius: 14px; border: 1px solid var(--border); }
+        .stat-box { background: rgba(0,0,0,0.3); padding: 12px 2px; border-radius: 12px; border: 1px solid var(--border); }
         .stat-label { font-size: 8px; color: #999; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        .stat-val { font-size: 14px; font-weight: 700; color: #fff; }
+        .stat-val { font-size: 13px; font-weight: 700; }
 
-        /* AGENT SECTION */
-        .agent-section { text-align: center; margin: 40px 0 20px 0; }
-        .agent-img { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.4); margin-bottom: 15px; }
-        .owner-name { font-size: 16px; font-weight: 400; color: #ccc; margin: 0; }
-
-        .btn { display: block; background: #fff; color: #0A5C1A; padding: 20px; border-radius: 18px; text-decoration: none; font-weight: 800; text-align: center; font-size: 16px; margin-top: 20px; }
-        .footer { margin: 60px 0; text-align: center; font-size: 10px; color: #666; letter-spacing: 1px; }
+        .agent-section { text-align: center; margin: 30px 0; }
+        .agent-img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; margin-bottom: 12px; }
+        .owner-name { font-size: 15px; font-weight: 400; color: #bbb; margin: 0; }
+        
+        .footer { margin: 60px 0; text-align: center; font-size: 10px; color: #555; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -70,14 +63,20 @@
 <div class="bg-container"><div id="bgBlur"></div></div>
 
 <div class="container">
-    <div class="address-top" id="addressDisplay">LOADING ADDRESS...</div>
+    <div class="address-top" id="addressDisplay">LOADING...</div>
     
     <div class="video-container">
-        <video id="mainVideo" autoplay muted loop playsinline controlslist="nodownload"></video>
+        <video id="mainVideo" autoplay muted loop playsinline></video>
+    </div>
+
+    <div class="action-grid">
+        <a href="" id="callBtn" class="btn">CALL AGENT</a>
+        <a href="" id="textBtn" class="btn">TEXT AGENT</a>
+        <a href="#" class="btn">SAVE LISTING</a>
     </div>
 
     <div class="info-card">
-        <div class="price" id="priceDisplay">$000,000</div>
+        <div class="price" id="priceDisplay">$0</div>
         <div class="stats-grid">
             <div class="stat-box"><span class="stat-label">Acres</span><span id="acresDisplay" class="stat-val">--</span></div>
             <div class="stat-box"><span class="stat-label">SqFt</span><span id="sqftDisplay" class="stat-val">--</span></div>
@@ -91,16 +90,15 @@
         <p class="owner-name" id="ownerDisplay">Agent Name</p>
     </div>
 
-    <a href="#" class="btn">BOOK A PRIVATE TOUR</a>
-
     <div class="footer">POWERED BY ROD2REEL<br>+27 (0)68 364 4061</div>
 </div>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
-    
-    // Set text content
-    document.getElementById('addressDisplay').innerText = decodeURIComponent(urlParams.get('address') || 'Property Highlight');
+    const phone = urlParams.get('phone') || '';
+    const address = decodeURIComponent(urlParams.get('address') || '');
+
+    document.getElementById('addressDisplay').innerText = address || 'PROPERTY HIGHLIGHT';
     document.getElementById('priceDisplay').innerText = decodeURIComponent(urlParams.get('price') || '');
     document.getElementById('acresDisplay').innerText = urlParams.get('acres') || '--';
     document.getElementById('sqftDisplay').innerText = urlParams.get('sqft') || '--';
@@ -108,15 +106,16 @@
     document.getElementById('bathsDisplay').innerText = urlParams.get('baths') || '--';
     document.getElementById('ownerDisplay').innerText = decodeURIComponent(urlParams.get('owner') || '');
 
-    // Media Loading
-    const videoUrl = decodeURIComponent(urlParams.get('video') || '');
-    if(videoUrl) {
-        const vid = document.getElementById('mainVideo');
-        vid.src = videoUrl;
-        // Background Blur logic
-        document.getElementById('bgBlur').style.backgroundImage = `url(${videoUrl.replace('.mp4', '.jpg')})`;
+    if(phone) {
+        document.getElementById('callBtn').href = `tel:${phone}`;
+        document.getElementById('textBtn').href = `sms:${phone}&body=Hi! I just saw the video for ${address}. Can I get more info?`;
     }
 
+    const videoUrl = decodeURIComponent(urlParams.get('video') || '');
+    if(videoUrl) {
+        document.getElementById('mainVideo').src = videoUrl;
+        document.getElementById('bgBlur').style.backgroundImage = `url(${videoUrl.replace('.mp4', '.jpg')})`;
+    }
     const photoUrl = decodeURIComponent(urlParams.get('photo') || '');
     if(photoUrl) { document.getElementById('agentPhoto').src = photoUrl; }
 </script>
