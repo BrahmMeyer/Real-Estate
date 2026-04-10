@@ -6,50 +6,63 @@
     <title>Property Showcase</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --glass: rgba(255, 255, 255, 0.1); --border: rgba(255, 255, 255, 0.15); }
-        body { margin: 0; padding: 0; background: #000; font-family: 'Inter', sans-serif; color: white; overflow-x: hidden; }
+        :root { --glass: rgba(255, 255, 255, 0.12); --border: rgba(255, 255, 255, 0.15); }
+        
+        /* Reset defaults to kill all hidden margins */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; background: #000; font-family: 'Inter', sans-serif; color: white; width: 100%; overflow-x: hidden; }
 
-        /* ZILLOW STYLE: BLURRED BACKGROUND */
-        .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
-        #bgBlur { width: 115%; height: 115%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.3); transform: translate(-5%, -5%); }
+        /* ZILLOW BLUR BACKGROUND */
+        .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        #bgBlur { width: 120%; height: 120%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.35); transform: translate(-10%, -10%); }
 
-        .container { max-width: 450px; margin: 0 auto; padding: 15px; box-sizing: border-box; }
+        .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 15px; position: relative; }
 
-        /* PROPERTY ADDRESS TOP */
-        .address-top { text-align: center; font-size: 13px; color: #bbb; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; font-weight: 600; }
+        /* PROPERTY ADDRESS */
+        .address-top { text-align: center; font-size: 12px; color: #bbb; text-transform: uppercase; letter-spacing: 2px; margin: 10px 0 20px 0; font-weight: 600; }
 
-        /* FIXED VIDEO CARD (REMOVES BLACK BARS) */
-        .video-card {
-            width: 100%; height: auto; background: #000; border-radius: 24px;
-            overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            border: 1px solid var(--border); margin-bottom: 20px;
-            line-height: 0; /* Fixes tiny gap at bottom of video */
+        /* THE FIX: KILLING BLACK BARS */
+        .video-container {
+            width: 100%;
+            position: relative;
+            background: #000;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            border: 1px solid var(--border);
+            line-height: 0; 
+            font-size: 0;
         }
-        video { width: 100%; height: auto; display: block; border-radius: 24px; }
+        
+        video {
+            width: 101%; /* Slight over-width to ensure edge-to-edge */
+            height: auto;
+            display: block;
+            margin: 0;
+            padding: 0;
+            object-fit: cover; /* Forces the video to fill its 9:16 frame */
+        }
 
         /* INFO CARD */
         .info-card {
-            background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-radius: 20px; border: 1px solid var(--border);
-            padding: 20px; margin-bottom: 20px; text-align: center;
+            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px; border: 1px solid var(--border);
+            padding: 24px; margin: 25px 0; text-align: center;
         }
-        .price { font-size: 26px; font-weight: 800; color: #efefef; margin-bottom: 15px; }
+        .price { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 20px; letter-spacing: -0.5px; }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
-        .stat-label { font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-val { font-size: 15px; font-weight: 600; display: block; margin-top: 2px; }
-
-        .features-header { font-size: 10px; color: #777; letter-spacing: 2px; margin: 15px 0 5px; text-transform: uppercase; }
-        .features-val { font-size: 13px; color: #ccc; line-height: 1.4; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .stat-box { background: rgba(0,0,0,0.3); padding: 12px 5px; border-radius: 14px; border: 1px solid var(--border); }
+        .stat-label { font-size: 8px; color: #999; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .stat-val { font-size: 14px; font-weight: 700; color: #fff; }
 
         /* AGENT SECTION */
-        .agent-section { text-align: center; margin-top: 30px; }
-        .agent-img { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; margin-bottom: 10px; }
-        .owner-name { font-size: 15px; font-weight: 400; color: #aaa; text-transform: none; }
+        .agent-section { text-align: center; margin: 40px 0 20px 0; }
+        .agent-img { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.4); margin-bottom: 15px; }
+        .owner-name { font-size: 16px; font-weight: 400; color: #ccc; margin: 0; }
 
-        .btn { display: block; background: #fff; color: #0A5C1A; padding: 18px; border-radius: 14px; text-decoration: none; font-weight: 800; margin-top: 20px; text-align: center; }
-        .footer { margin-top: 40px; padding-bottom: 40px; text-align: center; font-size: 10px; color: #555; letter-spacing: 1px; }
+        .btn { display: block; background: #fff; color: #0A5C1A; padding: 20px; border-radius: 18px; text-decoration: none; font-weight: 800; text-align: center; font-size: 16px; margin-top: 20px; }
+        .footer { margin: 60px 0; text-align: center; font-size: 10px; color: #666; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -57,51 +70,53 @@
 <div class="bg-container"><div id="bgBlur"></div></div>
 
 <div class="container">
-    <div class="address-top" id="addressDisplay">PROPERTY ADDRESS</div>
+    <div class="address-top" id="addressDisplay">LOADING ADDRESS...</div>
     
-    <div class="video-card">
-        <video id="mainVideo" controls autoplay muted loop playsinline></video>
+    <div class="video-container">
+        <video id="mainVideo" autoplay muted loop playsinline controlslist="nodownload"></video>
     </div>
 
     <div class="info-card">
-        <div class="price" id="priceDisplay">$--,---</div>
+        <div class="price" id="priceDisplay">$000,000</div>
         <div class="stats-grid">
-            <div class="stat-box"><span class="stat-label">Acres</span><span class="stat-val" id="acresDisplay">--</span></div>
-            <div class="stat-box"><span class="stat-label">Sq Ft</span><span class="stat-val" id="sqftDisplay">--</span></div>
-            <div class="stat-box"><span class="stat-label">Beds</span><span class="stat-val" id="bedsDisplay">--</span></div>
-            <div class="stat-box"><span class="stat-label">Baths</span><span class="stat-val" id="bathsDisplay">--</span></div>
+            <div class="stat-box"><span class="stat-label">Acres</span><span id="acresDisplay" class="stat-val">--</span></div>
+            <div class="stat-box"><span class="stat-label">SqFt</span><span id="sqftDisplay" class="stat-val">--</span></div>
+            <div class="stat-box"><span class="stat-label">Beds</span><span id="bedsDisplay" class="stat-val">--</span></div>
+            <div class="stat-box"><span class="stat-label">Baths</span><span id="bathsDisplay" class="stat-val">--</span></div>
         </div>
-        <div class="features-header">Special Features</div>
-        <div class="features-val" id="featuresDisplay">...</div>
     </div>
 
     <div class="agent-section">
         <img src="" id="agentPhoto" class="agent-img">
-        <div class="owner-name" id="ownerDisplay">Agent Name</div>
+        <p class="owner-name" id="ownerDisplay">Agent Name</p>
     </div>
 
-    <a href="#" class="btn">SAVE LISTING</a>
+    <a href="#" class="btn">BOOK A PRIVATE TOUR</a>
 
     <div class="footer">POWERED BY ROD2REEL<br>+27 (0)68 364 4061</div>
 </div>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
-    document.getElementById('addressDisplay').innerText = decodeURIComponent(urlParams.get('address') || 'Listing Highlight');
-    document.getElementById('priceDisplay').innerText = decodeURIComponent(urlParams.get('price') || '$0');
+    
+    // Set text content
+    document.getElementById('addressDisplay').innerText = decodeURIComponent(urlParams.get('address') || 'Property Highlight');
+    document.getElementById('priceDisplay').innerText = decodeURIComponent(urlParams.get('price') || '');
     document.getElementById('acresDisplay').innerText = urlParams.get('acres') || '--';
     document.getElementById('sqftDisplay').innerText = urlParams.get('sqft') || '--';
     document.getElementById('bedsDisplay').innerText = urlParams.get('beds') || '--';
     document.getElementById('bathsDisplay').innerText = urlParams.get('baths') || '--';
-    document.getElementById('featuresDisplay').innerText = decodeURIComponent(urlParams.get('features') || '');
     document.getElementById('ownerDisplay').innerText = decodeURIComponent(urlParams.get('owner') || '');
-    
+
+    // Media Loading
     const videoUrl = decodeURIComponent(urlParams.get('video') || '');
     if(videoUrl) {
-        document.getElementById('mainVideo').src = videoUrl;
-        // Background blur logic - using a thumbnail of the video
+        const vid = document.getElementById('mainVideo');
+        vid.src = videoUrl;
+        // Background Blur logic
         document.getElementById('bgBlur').style.backgroundImage = `url(${videoUrl.replace('.mp4', '.jpg')})`;
     }
+
     const photoUrl = decodeURIComponent(urlParams.get('photo') || '');
     if(photoUrl) { document.getElementById('agentPhoto').src = photoUrl; }
 </script>
