@@ -18,32 +18,34 @@
 
         .address-top { text-align: center; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 2.5px; margin: 10px 0 20px 0; font-weight: 600; }
 
-        /* VIDEO CONTAINER - ADDED PADDING FOR CONTROLS */
+        /* VIDEO CONTAINER */
         .video-container {
             width: 100%; position: relative; background: #000; border-radius: 28px;
             overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-            border: 1px solid var(--border); line-height: 0;
+            border: 1px solid var(--border); line-height: 0; 
         }
-        
-        /* Forces native controls to be visible and usable */
-        video { 
-            width: 100%; 
-            height: auto; 
-            display: block; 
-            object-fit: cover; 
-            background: #000;
-        }
+        video { width: 100%; height: auto; display: block; object-fit: cover; }
 
-        /* BUTTON ROW */
-        .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        /* ACTION GRID (3 BUTTONS) */
+        .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
         .btn { 
             display: flex; align-items: center; justify-content: center;
-            height: 55px; border-radius: 14px; text-decoration: none; 
-            font-weight: 800; font-size: 11px; text-align: center;
+            height: 50px; border-radius: 12px; text-decoration: none; 
+            font-weight: 800; font-size: 10px; text-align: center;
             background: linear-gradient(135deg, #ffffff 0%, #e8f5e9 100%);
             color: #0A5C1A;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             border: 1px solid rgba(255,255,255,0.4);
+            text-transform: uppercase;
+        }
+
+        /* SAVE LISTING (SUBTLE SECONDARY) */
+        .btn-save {
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 55px; border-radius: 14px; text-decoration: none;
+            font-weight: 800; font-size: 14px; margin-top: 10px;
+            background: var(--glass); color: #fff; border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
         }
 
         .info-card {
@@ -59,7 +61,7 @@
         .stat-val { font-size: 13px; font-weight: 700; }
 
         .agent-section { text-align: center; margin: 30px 0; }
-        .agent-img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; margin-bottom: 12px; }
+        .agent-img { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; margin-bottom: 12px; }
         .owner-name { font-size: 15px; font-weight: 400; color: #bbb; margin: 0; }
         
         .footer { margin: 60px 0; text-align: center; font-size: 10px; color: #555; letter-spacing: 1px; }
@@ -79,8 +81,10 @@
     <div class="action-grid">
         <a href="" id="callBtn" class="btn">CALL AGENT</a>
         <a href="" id="textBtn" class="btn">TEXT AGENT</a>
-        <a href="#" class="btn">SAVE LISTING</a>
+        <a href="" id="galleryBtn" class="btn">VIEW GALLERY</a>
     </div>
+
+    <a href="#" class="btn-save">SAVE LISTING</a>
 
     <div class="info-card">
         <div class="price" id="priceDisplay">$0</div>
@@ -104,6 +108,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const phone = urlParams.get('phone') || '';
     const address = decodeURIComponent(urlParams.get('address') || '');
+    const gallery = decodeURIComponent(urlParams.get('gallery') || '');
 
     document.getElementById('addressDisplay').innerText = address || 'PROPERTY HIGHLIGHT';
     document.getElementById('priceDisplay').innerText = decodeURIComponent(urlParams.get('price') || '');
@@ -116,6 +121,10 @@
     if(phone) {
         document.getElementById('callBtn').href = `tel:${phone}`;
         document.getElementById('textBtn').href = `sms:${phone}&body=Hi! I just saw the video for ${address}. Can I get more info?`;
+    }
+    
+    if(gallery) {
+        document.getElementById('galleryBtn').href = gallery;
     }
 
     const videoUrl = decodeURIComponent(urlParams.get('video') || '');
