@@ -5,117 +5,108 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Listing Reel</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
 <style>
 body {
     margin:0;
+    font-family:'Inter', sans-serif;
     background:#080808;
     color:#fff;
-    font-family:Arial, sans-serif;
     text-align:center;
 }
 
 .container {
     max-width:500px;
-    margin:auto;
+    margin:0 auto;
     padding:20px;
 }
 
-.video-wrap video {
+video {
     width:100%;
-    border-radius:20px;
+    border-radius:16px;
+    margin-bottom:20px;
 }
 
-/* PRICE COLOR UPDATED */
 .price {
     font-size:28px;
-    font-weight:bold;
+    font-weight:800;
     color:#b3b3b3;
-    margin:20px 0;
+    margin-bottom:20px;
 }
 
-.stats {
-    background:#111;
-    padding:20px;
-    border-radius:16px;
-    border:1px solid #1a1a1a;
-}
-
-.stats-grid {
+.grid {
     display:grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns:1fr 1fr;
     gap:15px;
+    margin-bottom:20px;
 }
 
-.stat-box {
-    text-align:center;
+.card {
+    background:rgba(255,255,255,0.05);
+    padding:15px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.1);
 }
 
-.stat-title {
-    font-size:10px;
-    color:#777;
-    text-transform:uppercase;
+.label {
+    font-size:11px;
+    color:#aaa;
+    letter-spacing:1px;
+    margin-bottom:5px;
 }
 
-.stat-value {
+.value {
     font-size:16px;
-    font-weight:bold;
+    font-weight:600;
 }
 
-/* SPECIAL FEATURES INSIDE SAME BLOCK */
 .features {
-    margin-top:20px;
-    text-align:center;
+    margin-top:15px;
 }
 
 .features h3 {
     font-size:12px;
     letter-spacing:2px;
-    color:#888;
-    margin-bottom:10px;
+    color:#b3b3b3;
 }
 
-.features p {
-    font-size:14px;
-    color:#ddd;
-}
-
-/* AGENT PHOTO BIGGER */
 .agent {
     margin-top:30px;
 }
 
 .agent img {
-    width:160px;
-    height:160px;
+    width:120px;
+    height:120px;
     border-radius:50%;
     object-fit:cover;
-    border:2px solid #222;
+    margin-bottom:10px;
 }
 
-.owner {
-    margin-top:10px;
-    font-size:14px;
-    color:#ccc;
-}
-
-/* BUTTON */
-.btn {
+.button {
     display:block;
-    margin:25px auto;
-    padding:16px;
-    width:100%;
-    border-radius:10px;
-    background:#fff;
-    color:#0A5C1A;
-    font-weight:bold;
+    margin:15px auto;
+    padding:15px;
+    width:80%;
+    border-radius:12px;
+    font-weight:700;
     text-decoration:none;
 }
 
-/* FOOTER */
+.call {
+    background:#0A5C1A;
+    color:#fff;
+}
+
+.save {
+    background:#fff;
+    color:#0A5C1A;
+}
+
 .footer {
-    margin-top:40px;
+    margin-top:30px;
     font-size:10px;
-    color:#555;
+    color:#777;
 }
 </style>
 </head>
@@ -124,61 +115,79 @@ body {
 
 <div class="container">
 
-    <div class="video-wrap">
-        <video src="" controls></video>
-    </div>
+    <!-- VIDEO -->
+    <video id="video" controls autoplay muted loop></video>
 
-    <div class="price">{{price}}</div>
+    <!-- PRICE -->
+    <div class="price" id="price"></div>
 
-    <!-- MERGED BLOCK -->
-    <div class="stats">
-
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-title">Acres</div>
-                <div class="stat-value">{{acres}}</div>
-            </div>
-
-            <div class="stat-box">
-                <div class="stat-title">Sq Footage</div>
-                <div class="stat-value">{{sqft}}</div>
-            </div>
-
-            <div class="stat-box">
-                <div class="stat-title">Bedrooms</div>
-                <div class="stat-value">{{beds}}</div>
-            </div>
-
-            <div class="stat-box">
-                <div class="stat-title">Bathrooms</div>
-                <div class="stat-value">{{baths}}</div>
-            </div>
+    <!-- PROPERTY GRID -->
+    <div class="grid">
+        <div class="card">
+            <div class="label">ACRES</div>
+            <div class="value" id="acres"></div>
         </div>
 
-        <!-- SPECIAL FEATURES INSIDE -->
-        <div class="features">
-            <h3>SPECIAL FEATURES</h3>
-            <p>{{features}}</p>
+        <div class="card">
+            <div class="label">SQ FOOTAGE</div>
+            <div class="value" id="sqft"></div>
         </div>
 
+        <div class="card">
+            <div class="label">BEDROOMS</div>
+            <div class="value" id="beds"></div>
+        </div>
+
+        <div class="card">
+            <div class="label">BATHROOMS</div>
+            <div class="value" id="baths"></div>
+        </div>
     </div>
 
-    <!-- AGENT SECTION -->
+    <!-- FEATURES INSIDE SAME BLOCK -->
+    <div class="card features">
+        <h3>SPECIAL FEATURES</h3>
+        <div class="value" id="features"></div>
+    </div>
+
+    <!-- AGENT -->
     <div class="agent">
-        <img src="{{photo}}" alt="Agent Photo">
-        <div class="owner">{{Owner}}</div>
+        <img id="agentPhoto" src="">
+        <div id="owner"></div>
     </div>
 
-    <!-- UPDATED BUTTON TEXT -->
-    <a href="#" class="btn">SAVE LISTING</a>
+    <!-- BUTTONS -->
+    <a id="callBtn" class="button call">CALL AGENT</a>
+    <a class="button save">SAVE LISTING</a>
 
-    <!-- UPDATED FOOTER -->
+    <!-- FOOTER -->
     <div class="footer">
-        POWERED BY ROD2REEL<br>
-        +27 (0)68 364 4061
+        <div>POWERED BY ROD2REEL</div>
+        <div>+27 (0)68 364 4061</div>
     </div>
 
 </div>
+
+<!-- JS MAPPING -->
+<script>
+const params = new URLSearchParams(window.location.search);
+
+// TEXT
+document.getElementById("price").innerText = params.get("price");
+document.getElementById("acres").innerText = params.get("acres");
+document.getElementById("sqft").innerText = params.get("sqft");
+document.getElementById("beds").innerText = params.get("beds");
+document.getElementById("baths").innerText = params.get("baths");
+document.getElementById("features").innerText = params.get("features");
+document.getElementById("owner").innerText = params.get("name");
+
+// MEDIA
+document.getElementById("video").src = params.get("video");
+document.getElementById("agentPhoto").src = params.get("photo");
+
+// CALL BUTTON
+document.getElementById("callBtn").href = "tel:" + params.get("phone");
+</script>
 
 </body>
 </html>
