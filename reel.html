@@ -15,17 +15,16 @@
         .video-wrap { border-radius: 20px; overflow: hidden; box-shadow: 0 15px 35px rgba(10,25,47,0.1); margin-bottom: 25px; background: #000; line-height: 0; }
         video { width: 100%; display: block; }
         
-        /* New Caption Box */
         #captionBox { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--accent); margin-bottom: 20px; text-align: left; display: none; }
         .caption-label { font-size: 10px; color: #718096; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 700; }
-        #captionText { font-size: 15px; line-height: 1.5; color: var(--navy); }
+        #captionText { font-size: 14px; line-height: 1.5; color: var(--navy); }
 
         .btn { width: 100%; padding: 18px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 12px; cursor: pointer; text-decoration: none; display: inline-block; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
         #reviewBtn { background: var(--navy); color: #fff; border: none; }
         .btn-secondary { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
         
-        #bizLogo { max-height: 120px; max-width: 80%; margin: 30px auto; display: none; }
-        .footer-main { font-size: 10px; color: #94A3B8; letter-spacing: 2px; font-weight: 700; margin-top: 20px; }
+        #bizLogo { max-height: 100px; max-width: 80%; margin: 30px auto; display: none; }
+        .footer-main { font-size: 10px; color: #94A3B8; letter-spacing: 2px; font-weight: 700; margin-top: 20px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -44,7 +43,7 @@
             <div id="captionText"></div>
         </div>
 
-        <a id="reviewBtn" class="btn" style="display:none;">Leave A Review</a>
+        <a id="reviewBtn" class="btn" style="display:none;" target="_blank">Leave A Review</a>
         <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
         <img id="bizLogo" alt="Logo">
         <div class="footer-main">POWERED BY ROD2REEL</div>
@@ -60,43 +59,41 @@ const TABLE = 'tblCYkMaAOHrX0nwN';
 async function load() {
     if (!id) return;
     try {
-        // FIXED FORMULA: Looking for "Video ID" to match your Deliveries Table
+        // This formula covers all your bases: Video ID (from Deliveries) or lookupId (from Charters)
         const formula = encodeURIComponent(`OR({Video ID}="${id}", {lookupId}="${id}", {formId}="${id}")`);
         const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&sort[0][field]=Created&sort[0][direction]=desc`;
         
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
-        if (!data.records || data.records.length === 0) {
-            console.error("No record found");
-            return;
-        }
+        if (!data.records || data.records.length === 0) return;
 
         const f = data.records[0].fields;
         
-        // Business Name Mapping (Checks both potential column names)
-        let name = f['Business Name'] || f['Charter Name'] || "ROD2REEL";
-        document.getElementById('bizName').innerText = name.toUpperCase();
+        // Header Text
+        let bizName = f['Charter Name'] || f['Business Name'] || "ROD2REEL";
+        document.getElementById('bizName').innerText = (Array.isArray(bizName) ? bizName[0] : bizName).toUpperCase();
         
-        // Video Logic
+        // Video
         document.getElementById('video').src = (f['Video URL'] || "") + "?t=" + new Date().getTime();
 
-        // New Caption Logic
+        // Caption Box
         if (f['Caption']) {
             document.getElementById('captionText').innerText = f['Caption'];
             document.getElementById('captionBox').style.display = 'block';
         }
 
-        // Logo Logic
-        const logoData = f['Logo'];
+        // Logo
+        const logoData = f['Logo'] || f['Logo URL'];
         if (logoData) {
             const logoImg = document.getElementById('bizLogo');
             logoImg.src = Array.isArray(logoData) ? logoData[0].url : logoData;
             logoImg.onload = () => { logoImg.style.display = 'block'; };
         }
 
-        // Review Logic
-        if (f['Review']) {
-            document.getElementById('reviewBtn').href = f['Review'];
+        // Review Button
+        let review = f['Review'] || f['GMB Review Link'];
+        if (review) {
+            document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review;
             document.getElementById('reviewBtn').style.display = 'block';
         }
 
@@ -108,9 +105,7 @@ async function load() {
 function downloadVideo() { 
     let url = document.getElementById('video').src.split('?')[0];
     if (url && url.includes('cloudinary')) url = url.replace('/upload/', '/upload/fl_attachment/');
-    if(url){
-        window.open(url, '_blank');
-    }
+    window.open(url, '_blank');
 }
 load();
 </script>
