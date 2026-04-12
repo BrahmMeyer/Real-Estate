@@ -5,43 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dispatch Center</title>
     <style>
-        :root { --blue: #00D4FF; --navy: #0A192F; --pearl: #FDFBF7; --border: #E2E8F0; }
-        body { background: var(--pearl); color: var(--navy); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; text-align: center; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-        .card { background: #fff; padding: 35px; border-radius: 20px; border: 1px solid var(--border); width: 100%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
+        :root { --wa-green: #25D366; --text-blue: #0047AB; --navy: #0A192F; --pearl: #FDFBF7; }
+        body { background: var(--pearl); color: var(--navy); font-family: sans-serif; text-align: center; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .card { background: #fff; padding: 35px; border-radius: 20px; border: 1px solid #E2E8F0; width: 100%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
         h2 { color: var(--navy); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; font-size: 16px; font-weight: 800; }
-        input { padding: 16px; width: 100%; border-radius: 10px; border: 1px solid var(--border); background: #fff; color: #000; margin-bottom: 15px; box-sizing: border-box; text-align: center; font-size: 16px; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--blue); }
-        .btn { width: 100%; padding: 16px; border-radius: 10px; border: 2px solid var(--blue); background: transparent; color: var(--blue); font-weight: bold; cursor: pointer; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1.5px; text-decoration: none; display: inline-block; transition: 0.3s; box-sizing: border-box; }
-        .btn:hover { background: rgba(0, 212, 255, 0.05); }
-        .btn:active { background: rgba(0, 212, 255, 0.1); }
+        input { padding: 16px; width: 100%; border-radius: 10px; border: 1px solid #E2E8F0; background: #fff; color: #000; margin-bottom: 15px; box-sizing: border-box; text-align: center; font-size: 16px; outline: none; }
+        .btn { width: 100%; padding: 16px; border-radius: 10px; background: transparent; color: #000; font-weight: bold; cursor: pointer; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; display: inline-block; box-sizing: border-box; }
+        .btn-wa { border: 2px solid var(--wa-green); }
+        .btn-sms { border: 2px solid var(--text-blue); }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>Dispatch Center</h2>
-        <input id="input" type="tel" placeholder="Mobile or Email" autocomplete="off">
-        <button class="btn" onclick="send('whatsapp')">Send via WhatsApp</button>
-        <button class="btn" onclick="send('email')">Send via Email</button>
+        <input id="input" type="tel" placeholder="Enter Mobile Number" autocomplete="off">
+        <button class="btn btn-wa" onclick="send('wa')">Send via WhatsApp</button>
+        <button class="btn btn-sms" onclick="send('sms')">Send via Text</button>
     </div>
     <script>
         const id = new URLSearchParams(window.location.search).get('id');
         function send(type) {
             const val = document.getElementById('input').value.trim();
             if(!val) return;
-            
             const link = `https://delivery.rod2reel.com/reel.html?id=${id}`;
-            const msg = `Your project reveal is ready. View it here: ${link}`;
-            
-            if (type === 'whatsapp') {
-                let phone = val.replace(/\D/g, '');
-                // South Africa country code handling
-                if (phone.startsWith('0') && phone.length === 10) phone = '27' + phone.substring(1);
+            const msg = `View it here: ${link}`;
+            let phone = val.replace(/\D/g, '');
+            if (phone.startsWith('0') && phone.length === 10) phone = '27' + phone.substring(1);
+            if (type === 'wa') {
                 window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
             } else {
-                window.location.href = `mailto:${val}?subject=Your Reveal is Ready&body=${encodeURIComponent(msg)}`;
+                window.location.href = `sms:${phone}?&body=${encodeURIComponent(msg)}`;
             }
         }
     </script>
 </body>
-</html>
 </html>
