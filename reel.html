@@ -19,9 +19,9 @@
         #reviewBtn { background: var(--navy); color: #fff; border: 2px solid var(--navy); display: none; }
         .btn-secondary { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
 
-        #captionBox { background: #fff; padding: 18px; border-radius: 10px; border: 2px solid var(--navy); text-align: left; display: none; margin-bottom: 12px; }
-        .caption-label { font-size: 9px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700; }
-        #captionText { font-size: 14px; line-height: 1.5; color: var(--navy); }
+        /* Cleaned up Caption Box - No Header */
+        #captionBox { background: #fff; padding: 20px; border-radius: 10px; border: 2px solid var(--navy); text-align: left; display: none; margin-bottom: 12px; }
+        #captionText { font-size: 14px; line-height: 1.6; color: var(--navy); }
         
         #bizLogo { max-height: 80px; max-width: 180px; margin: 30px auto; display: none; }
         .footer-main { font-size: 9px; color: #94A3B8; letter-spacing: 2px; font-weight: 700; margin-top: 20px; text-transform: uppercase; }
@@ -37,7 +37,6 @@
         <a id="reviewBtn" class="btn" target="_blank">Leave A Review</a>
         
         <div id="captionBox">
-            <div class="caption-label">Details</div>
             <div id="captionText"></div>
         </div>
 
@@ -67,6 +66,7 @@ async function load() {
         document.getElementById('bizName').innerText = "YOUR VIDEO FROM " + (Array.isArray(bName) ? bName[0] : bName).toUpperCase();
         document.getElementById('video').src = (f['Video URL'] || "") + "?t=" + new Date().getTime();
         
+        // Maps specifically from the 'Caption' column in Airtable
         if (f['Caption']) { 
             document.getElementById('captionText').innerText = f['Caption']; 
             document.getElementById('captionBox').style.display = 'block'; 
