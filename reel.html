@@ -21,7 +21,7 @@ video{width:100%; display:block;}
 
 .caption-box { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; text-align: left; }
 .caption-label { font-size: 10px; font-weight: 800; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
-.caption-text { font-size: 14px; line-height: 1.5; color: var(--navy); }
+.caption-text { font-size: 14px; line-height: 1.5; color: var(--navy); white-space: pre-wrap; }
 
 #shareInput { width:100%; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px; text-align:center; font-size:16px; outline:none; }
 .share-grid { display:flex; gap:8px; margin-bottom:20px; }
@@ -46,7 +46,7 @@ video{width:100%; display:block;}
         <a id="reviewBtn" class="btn" style="display:none;">Leave Us A Review ⭐</a>
 
         <div class="caption-box" id="captionBox" style="display:none;">
-            <span class="caption-label">Project Details</span>
+            <span class="caption-label">Message</span>
             <div class="caption-text" id="captionText"></div>
         </div>
 
@@ -84,10 +84,12 @@ async function load() {
         document.getElementById('bizName').innerText = (f['Charter Name'] || "ROD2REEL").toUpperCase();
         document.getElementById('video').src = (f['Video URL'] || "") + "?t=" + new Date().getTime();
 
-        if(f['Special Features']) {
-            document.getElementById('captionText').innerText = f['Special Features'];
+        // LOOKING FOR THE FIELD "Caption"
+        if(f['Caption']) {
+            document.getElementById('captionText').innerText = f['Caption'];
             document.getElementById('captionBox').style.display = 'block';
         }
+
         if (f['Review']) {
             document.getElementById('reviewBtn').href = f['Review'];
             document.getElementById('reviewBtn').style.display = 'block';
