@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dispatch — Rod2Reel</title>
+<title>Go — Rod2Reel Dispatch</title>
 <style>
 :root { --navy: #0A192F; --pearl: #FDFBF7; --border: #E2E8F0; }
 body{background:var(--pearl); color:var(--navy); font-family:sans-serif; text-align:center; padding:40px; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height: 100vh; margin:0;}
@@ -16,24 +16,24 @@ input{padding:14px; width:100%; border-radius: 8px; border: 1px solid var(--bord
 </head>
 <body>
 <div class="card">
-    <h2>Dispatch Reel 🚀</h2>
+    <h2>Dispatch Reel 🎥</h2>
     <input id="input" placeholder="Client Phone or Email" autocomplete="off">
-    <button class="btn" onclick="send('whatsapp')">Send via WhatsApp</button>
-    <button class="btn btn-alt" onclick="send('email')">Send via Email</button>
+    <button class="btn" onclick="send('whatsapp')">WhatsApp Reveal</button>
+    <button class="btn btn-alt" onclick="send('email')">Email Reveal</button>
 </div>
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
 function send(type) {
     const val = document.getElementById('input').value.trim();
     if(!val) return;
-    const link = `https://delivery.rod2reel.com/reel.html?id=${id}`;
-    const msg = `Hi! Your project video is ready to view and download here: ${link}`;
+    const link = `https://go.rod2reel.com/reel.html?id=${id}`;
+    const msg = `Your highlight reel is ready! 🎬 View the transformation here: ${link}`;
     if (type === 'whatsapp') {
         let phone = val.replace(/\D/g, '');
         if (phone.startsWith('0') && phone.length === 10) phone = '27' + phone.substring(1);
         window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
     } else if (type === 'email') {
-        window.location.href = `mailto:${val}?subject=Your Video Reveal&body=${encodeURIComponent(msg)}`;
+        window.location.href = `mailto:${val}?subject=Your Reveal is Ready&body=${encodeURIComponent(msg)}`;
     }
 }
 </script>
