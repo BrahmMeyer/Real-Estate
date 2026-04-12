@@ -6,14 +6,7 @@
 <title>🎬 Your Reel is Ready</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root { 
-    --navy: #0A192F; 
-    --accent: #112240;
-    --pearl: #FDFBF7; 
-    --border: #E2E8F0; 
-    --text: #0A192F; 
-    --grey: #718096; 
-}
+:root { --navy: #0A192F; --accent: #112240; --pearl: #FDFBF7; --border: #E2E8F0; --text: #0A192F; --grey: #718096; }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--pearl);color:var(--text);font-family:'DM Sans',sans-serif;text-align:center;}
 #loader{height:100vh;display:flex;justify-content:center;align-items:center;color:var(--navy);}
@@ -24,21 +17,19 @@ body{background:var(--pearl);color:var(--text);font-family:'DM Sans',sans-serif;
 video{width:100%; display:block;}
 
 .btn{width:100%; padding:18px; border-radius:12px; font-weight:bold; font-size:15px; margin-bottom:15px; cursor:pointer; text-decoration:none; display:inline-block; border:2px solid var(--navy); text-transform:uppercase; letter-spacing:1.5px; transition: 0.3s;}
-
 #reviewBtn { background: var(--navy); color: #fff; border: none; box-shadow: 0 4px 15px rgba(10, 25, 47, 0.2); }
-#reviewBtn:hover { background: var(--accent); }
 
-/* Caption Box */
-.caption-box { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 25px; text-align: left; }
+.caption-box { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; text-align: left; }
 .caption-label { font-size: 10px; font-weight: 800; color: var(--grey); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
 .caption-text { font-size: 14px; line-height: 1.5; color: var(--navy); }
 
-.btn-secondary { background: transparent; color: var(--navy); }
-.btn-secondary:hover { background: rgba(10, 25, 47, 0.05); }
+#shareInput { width:100%; padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px; text-align:center; font-size:16px; outline:none; }
+.share-grid { display:flex; gap:8px; margin-bottom:20px; }
+.btn-s { flex:1; padding:12px; border-radius:8px; color:white; border:none; font-weight:bold; cursor:pointer; font-size:11px; text-transform:uppercase; }
 
+.btn-secondary { background: transparent; color: var(--navy); margin-top:10px; }
 #bizLogo { max-height: 120px; max-width: 90%; width: auto; margin: 40px auto 15px; display: none; opacity: 0.8; } 
-.footer { margin-top: 10px; padding-top: 0; border-top: none; }
-.footer-main { font-size: 11px; color: var(--grey); letter-spacing: 3px; font-weight: bold; text-transform: uppercase; }
+.footer-main { font-size: 11px; color: var(--grey); letter-spacing: 3px; font-weight: bold; text-transform: uppercase; margin-top:20px; }
 </style>
 </head>
 <body>
@@ -47,7 +38,6 @@ video{width:100%; display:block;}
 
 <div id="main">
     <div id="bizName" class="biz-name">BUSINESS</div>
-
     <div class="container">
         <div class="video-wrap">
             <video id="video" controls playsinline></video>
@@ -56,17 +46,22 @@ video{width:100%; display:block;}
         <a id="reviewBtn" class="btn" style="display:none;">Leave Us A Review ⭐</a>
 
         <div class="caption-box" id="captionBox" style="display:none;">
-            <span class="caption-label">Project Details 📝</span>
+            <span class="caption-label">Project Details</span>
             <div class="caption-text" id="captionText"></div>
         </div>
 
-        <button class="btn btn-secondary" onclick="downloadVideo()">⬇️ Download Video</button>
-
-        <img id="bizLogo" alt="Business Logo">
-
-        <div class="footer">
-            <div class="footer-main">POWERED BY ROD2REEL 🎣</div>
+        <div class="caption-box">
+            <span class="caption-label">Share with a Friend 🚀</span>
+            <input type="tel" id="shareInput" placeholder="Enter Mobile Number">
+            <div class="share-grid">
+                <button onclick="share('whatsapp')" class="btn-s" style="background:#25D366;">WhatsApp</button>
+                <button onclick="share('sms')" class="btn-s" style="background:var(--navy);">Text Message</button>
+            </div>
         </div>
+
+        <button class="btn btn-secondary" onclick="downloadVideo()">⬇️ Download Video</button>
+        <img id="bizLogo" alt="Logo">
+        <div class="footer-main">POWERED BY ROD2REEL 🎣</div>
     </div>
 </div>
 
@@ -81,7 +76,6 @@ async function load() {
     try {
         const formula = encodeURIComponent(`OR(FIND("${id}", ARRAYJOIN({lookupId})), {formId}="${id}", {Video ID}="${id}")`);
         const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&sort[0][field]=Created&sort[0][direction]=desc`;
-        
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
         if (!data.records || data.records.length === 0) return;
@@ -94,29 +88,32 @@ async function load() {
             document.getElementById('captionText').innerText = f['Special Features'];
             document.getElementById('captionBox').style.display = 'block';
         }
-
         if (f['Review']) {
             document.getElementById('reviewBtn').href = f['Review'];
             document.getElementById('reviewBtn').style.display = 'block';
         }
-
         if (f['Logo']) {
             const logoImg = document.getElementById('bizLogo');
             logoImg.src = Array.isArray(f['Logo']) ? f['Logo'][0].url : f['Logo'];
             logoImg.onload = () => { logoImg.style.display = 'block'; };
         }
-
         document.getElementById('loader').style.display = 'none';
         document.getElementById('main').style.display = 'block';
     } catch (e) { console.error(e); }
 }
 
+function share(type) {
+    const num = document.getElementById('shareInput').value.replace(/\D/g, '');
+    if(!num) return alert('Enter a number');
+    let phone = num; if (phone.startsWith('0') && phone.length === 10) phone = '27' + phone.substring(1);
+    const msg = `Check this out! 🎬 ${window.location.href}`;
+    window.location.href = type === 'whatsapp' ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}` : `sms:${phone}?body=${encodeURIComponent(msg)}`;
+}
+
 function downloadVideo() { 
     let url = document.getElementById('video').src.split('?')[0];
-    if (url && url.includes('cloudinary')) url = url.replace('/upload/', '/upload/fl_attachment/');
-    if(url){
-        const a = document.createElement('a'); a.href = url; a.download = "reel.mp4"; a.click();
-    }
+    if (url.includes('cloudinary')) url = url.replace('/upload/', '/upload/fl_attachment/');
+    const a = document.createElement('a'); a.href = url; a.download = "reel.mp4"; a.click();
 }
 load();
 </script>
