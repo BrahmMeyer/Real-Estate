@@ -3,28 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 Your Reel is Ready</title>
+    <title>Your Reveal</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --gold:#F5A623; }
+        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --blue:#00D4FF; }
         body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; }
         #loader { height: 100vh; display: flex; justify-content: center; align-items: center; color: var(--navy); font-weight: bold; }
         #main { display: none; padding: 40px 20px; }
-        .biz-name { font-size: 28px; font-weight: 700; color: var(--navy); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
-        .container { max-width: 450px; margin: auto; }
-        .video-wrap { border-radius: 20px; overflow: hidden; box-shadow: 0 15px 35px rgba(10,25,47,0.1); margin-bottom: 25px; background: #000; line-height: 0; }
+        .biz-name { font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
+        .container { max-width: 400px; margin: auto; }
+        .video-wrap { border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 25px; background: #000; line-height: 0; border: 1px solid var(--accent); }
         video { width: 100%; display: block; }
         
-        #captionBox { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--accent); margin-bottom: 20px; text-align: left; display: none; }
-        .caption-label { font-size: 10px; color: #718096; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 700; }
-        #captionText { font-size: 14px; line-height: 1.5; color: var(--navy); }
-
-        .btn { width: 100%; padding: 18px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-bottom: 12px; cursor: pointer; text-decoration: none; display: inline-block; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
-        #reviewBtn { background: var(--navy); color: #fff; border: none; }
-        .btn-secondary { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
+        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .btn { width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none; box-sizing: border-box; display: block; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
         
-        #bizLogo { max-height: 100px; max-width: 80%; margin: 30px auto; display: none; }
-        .footer-main { font-size: 10px; color: #94A3B8; letter-spacing: 2px; font-weight: 700; margin-top: 20px; text-transform: uppercase; }
+        #reviewBtn { background: var(--navy); color: #fff; border: none; display: none; }
+        .btn-secondary { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
+
+        #captionBox { background: #fff; padding: 18px; border-radius: 10px; border: 1px solid var(--accent); text-align: left; display: none; margin-top: 10px; }
+        .caption-label { font-size: 9px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 700; }
+        #captionText { font-size: 14px; line-height: 1.5; color: var(--navy); }
+        
+        #bizLogo { max-height: 80px; max-width: 180px; margin: 30px auto; display: none; }
+        .footer-main { font-size: 9px; color: #94A3B8; letter-spacing: 2px; font-weight: 700; margin-top: 20px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -38,13 +40,16 @@
             <video id="video" controls playsinline></video>
         </div>
 
+        <div class="btn-group">
+            <a id="reviewBtn" class="btn" target="_blank">Leave A Review</a>
+            <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
+        </div>
+
         <div id="captionBox">
             <div class="caption-label">Project Details</div>
             <div id="captionText"></div>
         </div>
 
-        <a id="reviewBtn" class="btn" style="display:none;" target="_blank">Leave A Review</a>
-        <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
         <img id="bizLogo" alt="Logo">
         <div class="footer-main">POWERED BY ROD2REEL</div>
     </div>
@@ -59,7 +64,6 @@ const TABLE = 'tblCYkMaAOHrX0nwN';
 async function load() {
     if (!id) return;
     try {
-        // This formula covers all your bases: Video ID (from Deliveries) or lookupId (from Charters)
         const formula = encodeURIComponent(`OR({Video ID}="${id}", {lookupId}="${id}", {formId}="${id}")`);
         const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&sort[0][field]=Created&sort[0][direction]=desc`;
         
@@ -69,20 +73,15 @@ async function load() {
 
         const f = data.records[0].fields;
         
-        // Header Text
-        let bizName = f['Charter Name'] || f['Business Name'] || "ROD2REEL";
+        let bizName = f['Business Name'] || f['Charter Name'] || "ROD2REEL";
         document.getElementById('bizName').innerText = (Array.isArray(bizName) ? bizName[0] : bizName).toUpperCase();
-        
-        // Video
         document.getElementById('video').src = (f['Video URL'] || "") + "?t=" + new Date().getTime();
 
-        // Caption Box
         if (f['Caption']) {
             document.getElementById('captionText').innerText = f['Caption'];
             document.getElementById('captionBox').style.display = 'block';
         }
 
-        // Logo
         const logoData = f['Logo'] || f['Logo URL'];
         if (logoData) {
             const logoImg = document.getElementById('bizLogo');
@@ -90,7 +89,6 @@ async function load() {
             logoImg.onload = () => { logoImg.style.display = 'block'; };
         }
 
-        // Review Button
         let review = f['Review'] || f['GMB Review Link'];
         if (review) {
             document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review;
