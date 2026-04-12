@@ -1,15 +1,16 @@
-# Rod2Reel Business Delivery System
+# 🚀 Rod2Reel Marketing Channel
 
-### 🌐 Setting up your Custom Domain
-1. **Namecheap:** Go to your Advanced DNS settings.
-2. **Add New Record:** - Type: `CNAME Record`
-   - Host: `delivery` (this makes it delivery.yourdomain.com)
-   - Value: `[your-github-username].github.io.` (Must end with a dot)
-   - TTL: `Automatic`
-3. **GitHub:** Go to your Repository Settings > Pages. 
-   - Under "Custom Domain", type `delivery.yourdomain.com`.
-   - Check "Enforce HTTPS".
+### 🌐 Domain Mapping
+- **CNAME:** `go.rod2reel.com`
+- **GitHub Pages:** Set to `Custom Domain` in Settings > Pages.
 
-### 🔗 URL Structure
-- **Client Link:** `delivery.yourdomain.com/reel.html?id=RECORD_ID`
-- **Dispatcher:** `delivery.yourdomain.com/send.html?id=RECORD_ID`
+### 📁 File Structure
+- `reel.html` -> The main customer reveal page.
+- `send.html` -> The dispatcher for WhatsApp/Email.
+
+### 🔗 Dynamic Links
+- **Reveal Link:** `https://go.rod2reel.com/reel.html?id={{RecordID}}`
+- **Dispatch Link:** `https://go.rod2reel.com/send.html?id={{RecordID}}`
+
+---
+*Powered by Rod2Reel Automation* 🥂
