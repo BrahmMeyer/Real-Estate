@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Video</title>
 
-    <!-- Open Graph (WhatsApp Preview) -->
+    <!-- WhatsApp Preview -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Your Stay Video">
     <meta property="og:description" content="Your stay, captured in a short highlight reel.">
@@ -13,42 +13,26 @@
     <meta property="og:url" content="">
     <meta property="og:site_name" content="Rod2Reel">
 
-    <!-- Twitter fallback -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Your Stay Video">
-    <meta name="twitter:description" content="Your stay, captured in a short highlight reel.">
-    <meta name="twitter:image" content="">
 
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <style>
         :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; }
         body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; }
-        #loader { height: 100vh; display: flex; justify-content: center; align-items: center; color: var(--navy); font-weight: bold; }
+        #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; }
         #main { display: none; padding: 40px 20px; }
 
-        .biz-name { 
-            font-size: 24px; 
-            font-weight: 900; 
-            color: var(--navy); 
-            margin-bottom: 25px; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-        }
+        .biz-name { font-size: 24px; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; }
 
         .container { max-width: 400px; margin: auto; }
-        .video-wrap { border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px; background: #000; border: 1px solid var(--accent); }
+        .video-wrap { border-radius: 16px; overflow: hidden; margin-bottom: 20px; background: #000; border: 1px solid var(--accent); }
         video { width: 100%; display: block; }
 
-        .btn { width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none; box-sizing: border-box; display: block; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-        #reviewBtn { background: var(--navy); color: #fff; border: 2px solid var(--navy); display: none; }
-        .btn-secondary { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
+        .btn { width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; display: block; text-transform: uppercase; margin-bottom: 12px; }
+        .btn-secondary { background: transparent; border: 2px solid var(--navy); }
 
-        #captionBox { background: #fff; padding: 20px; border-radius: 10px; border: 2px solid var(--navy); text-align: left; display: none; margin-bottom: 12px; }
-        #captionText { font-size: 14px; line-height: 1.6; color: var(--navy); }
-
-        #bizLogo { max-height: 80px; max-width: 180px; margin: 30px auto; display: none; }
-        .footer-main { font-size: 9px; color: #94A3B8; letter-spacing: 2px; font-weight: 700; margin-top: 20px; text-transform: uppercase; }
+        .footer-main { font-size: 9px; margin-top: 20px; text-transform: uppercase; }
     </style>
 </head>
 
@@ -63,112 +47,62 @@
             <video id="video" controls playsinline></video>
         </div>
 
-        <a id="reviewBtn" class="btn" target="_blank">Leave A Review</a>
-
-        <div id="captionBox">
-            <div id="captionText"></div>
-        </div>
-
         <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
 
-        <img id="bizLogo" alt="Logo">
         <div class="footer-main">POWERED BY ROD2REEL</div>
     </div>
 </div>
 
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
-const TOKEN = 'YOUR_TOKEN';
-const BASE = 'YOUR_BASE';
-const TABLE = 'YOUR_TABLE';
 
-function setMeta(name, content, isProperty = false) {
-    let el = document.querySelector(isProperty 
-        ? `meta[property="${name}"]` 
-        : `meta[name="${name}"]`);
-    
-    if (!el) {
-        el = document.createElement('meta');
-        if (isProperty) el.setAttribute('property', name);
-        else el.setAttribute('name', name);
-        document.head.appendChild(el);
-    }
-    el.setAttribute('content', content);
+const TOKEN = 'patODjpFQhnsR92tl.5c80e0baa73a4b2099a83fead58c6cf8ac9811041b7077f031f95d5db82e8430';
+const BASE = 'appGGs07d4FB6htwg';
+const TABLE = 'tblCYkMaAOHrX0nwN';
+
+function setMeta(name, content) {
+    let el = document.querySelector(`meta[property="${name}"]`);
+    if (el) el.setAttribute('content', content);
 }
 
 async function load() {
     if (!id) return;
 
-    try {
-        const formula = encodeURIComponent(`OR({Video ID}="${id}", {lookupId}="${id}")`);
-        const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
-        const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
-        const data = await res.json();
+    const formula = encodeURIComponent(`OR({Video ID}="${id}", {lookupId}="${id}")`);
+    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
-        if (!data.records || data.records.length === 0) return;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
+    const data = await res.json();
 
-        const f = data.records[0].fields;
+    if (!data.records.length) return;
 
-        let name = f['Business Name'] || f['Charter Name'] || "Your Stay";
-        name = Array.isArray(name) ? name[0] : name;
+    const f = data.records[0].fields;
 
-        document.getElementById('bizName').innerText = name.toUpperCase();
+    let name = f['Charter Name'] || "Your Stay";
+    name = Array.isArray(name) ? name[0] : name;
 
-        const videoUrl = (f['Video URL'] || "");
-        document.getElementById('video').src = videoUrl + "?t=" + new Date().getTime();
+    document.getElementById('bizName').innerText = name.toUpperCase();
 
-        // 🔥 Cloudinary thumbnail + PLAY ICON overlay
-        let thumbnail = "";
-        if (videoUrl.includes('cloudinary')) {
-            thumbnail = videoUrl
-                .replace('/upload/', '/upload/so_0,l_play-button,fl_layer_apply/')
-                .replace('.mp4', '.jpg');
-        }
+    const videoUrl = f['Video URL'];
+    document.getElementById('video').src = videoUrl;
 
-        // 🔥 Set WhatsApp preview
-        const title = `${name} Video`;
-        const desc = "Your stay, captured in a short highlight reel.";
+    // Thumbnail with play overlay
+    let thumb = videoUrl
+        .replace('/upload/', '/upload/so_0,l_play-button,fl_layer_apply/')
+        .replace('.mp4', '.jpg');
 
-        setMeta("og:title", title, true);
-        setMeta("og:description", desc, true);
-        setMeta("og:image", thumbnail, true);
-        setMeta("og:url", window.location.href, true);
+    setMeta("og:title", name + " Video");
+    setMeta("og:description", "Your stay, captured in a short highlight reel.");
+    setMeta("og:image", thumb);
+    setMeta("og:url", window.location.href);
 
-        setMeta("twitter:title", title);
-        setMeta("twitter:description", desc);
-        setMeta("twitter:image", thumbnail);
-
-        if (f['Caption']) {
-            document.getElementById('captionText').innerText = f['Caption'];
-            document.getElementById('captionBox').style.display = 'block';
-        }
-
-        const logoData = f['Logo'] || f['Logo URL'];
-        if (logoData) {
-            const logoImg = document.getElementById('bizLogo');
-            logoImg.src = Array.isArray(logoData) ? logoData[0].url : logoData;
-            logoImg.onload = () => { logoImg.style.display = 'block'; };
-        }
-
-        let review = f['Review'] || f['GMB Review Link'];
-        if (review) {
-            document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review;
-            document.getElementById('reviewBtn').style.display = 'block';
-        }
-
-        document.getElementById('loader').style.display = 'none';
-        document.getElementById('main').style.display = 'block';
-
-    } catch (e) {
-        console.error(e);
-    }
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
 }
 
 function downloadVideo() {
-    let url = document.getElementById('video').src.split('?')[0];
-    if (url && url.includes('cloudinary')) {
-        url = url.replace('/upload/', '/upload/fl_attachment/');
-    }
+    let url = document.getElementById('video').src;
+    url = url.replace('/upload/', '/upload/fl_attachment/');
     window.open(url, '_blank');
 }
 
