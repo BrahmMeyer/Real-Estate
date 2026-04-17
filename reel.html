@@ -1,181 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Your Video</title>
-
-<meta property="og:type" content="website">
-<meta property="og:title" content="Your Stay Video">
-<meta property="og:description" content="Your stay, captured in a short highlight reel.">
-<meta property="og:image" content="">
-<meta property="og:url" content="">
-<meta property="og:site_name" content="Rod2Reel">
-
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-
-<style>
-:root { 
-    --navy:#0A192F; 
-    --pearl:#FDFBF7; 
-    --accent:#E2E8F0; 
-    --yellow:#FFD700; 
-    --blue-grad: linear-gradient(135deg, #0A192F 0%, #0047AB 100%); 
-}
-* { box-sizing: border-box; }
-body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
-
-#loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-
-#main { 
-    display: none; 
-    height: 100%; 
-    min-height: -webkit-fill-available;
-    flex-direction: column; 
-    padding: 10px 20px; /* Reduced padding for more room */
-    max-width: 400px; 
-    margin: 0 auto;
-    text-align: center;
-}
-
-.biz-name { 
-    font-size: 18px; 
-    font-weight: 900; 
-    margin: 10px 0; /* Tight margin top and bottom */
-    text-transform: uppercase; 
-    flex-shrink: 0;
-}
-
-.content-area {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1; /* This fills the screen */
-    overflow: hidden;
-}
-
-.video-wrap { 
-    width: 100%; 
-    flex-grow: 1; /* VIDEO NOW ADAPTS TO FILL SPACE */
-    border-radius: 12px; 
-    overflow: hidden; 
-    background: #000; 
-    border: 1px solid var(--accent);
-    display: flex;
-    align-items: center;
-    position: relative;
-}
-
-/* Forces the video to fill the growing container without overflowing */
-video { 
-    width: 100%; 
-    height: 100%; 
-    max-height: 100%; 
-    object-fit: contain; 
-    display: block; 
-}
-
-.video-hint {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--navy);
-    opacity: 0.8;
-    margin: 10px 0; /* Tight gap under video */
-    letter-spacing: 0.5px;
-    flex-shrink: 0;
-}
-
-.button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 10px; /* Gap above footer */
-    flex-shrink: 0;
-}
-
-.btn { 
-    width: 100%; 
-    padding: 14px; 
-    border-radius: 10px; 
-    font-weight: 700; 
-    font-size: 14px; 
-    cursor: pointer; 
-    display: block; 
-    text-transform: uppercase; 
-    text-decoration: none; 
-    transition: 0.2s;
-    text-align: center;
-    border: none;
-}
-
-#reviewBtn { 
-    background: var(--yellow); 
-    color: #000; 
-    display: none; 
-}
-
-.btn-grad { 
-    background: var(--blue-grad); 
-    color: #fff; 
-}
-
-.footer-main { 
-    font-size: 8px; 
-    padding-bottom: 15px; 
-    text-transform: uppercase; 
-    letter-spacing: 1px; 
-    opacity: 0.6;
-    flex-shrink: 0;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Your Video</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --yellow:#FFD700; --blue-grad: linear-gradient(135deg, #0A192F 0%, #0047AB 100%); }
+        * { box-sizing: border-box; }
+        body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
+        #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        #main { display: none; height: 100%; min-height: -webkit-fill-available; flex-direction: column; padding: 10px 20px; max-width: 400px; margin: 0 auto; text-align: center; }
+        .biz-name { font-size: 18px; font-weight: 900; margin: 10px 0; text-transform: uppercase; flex-shrink: 0; }
+        .content-area { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; }
+        .video-wrap { width: 100%; flex-grow: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--accent); display: flex; align-items: center; position: relative; }
+        video { width: 100%; height: 100%; max-height: 100%; object-fit: contain; display: block; }
+        .video-hint { font-size: 10px; font-weight: 700; color: var(--navy); opacity: 0.8; margin: 10px 0; letter-spacing: 0.5px; flex-shrink: 0; }
+        .button-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; flex-shrink: 0; }
+        .btn { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; display: block; text-transform: uppercase; text-decoration: none; transition: 0.2s; text-align: center; border: none; }
+        #reviewBtn { background: var(--yellow); color: #000; display: none; }
+        .btn-grad { background: var(--blue-grad); color: #fff; }
+        .footer-main { font-size: 8px; padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; flex-shrink: 0; }
+    </style>
 </head>
-
 <body>
 
 <div id="loader">GENERATING...</div>
 
 <div id="main">
     <div id="bizName" class="biz-name"></div>
-
     <div class="content-area">
         <div class="video-wrap">
             <video id="video" playsinline controls></video>
         </div>
-        
         <div class="video-hint">PREVIEW - PRESS ENLARGE TO VIEW ORIGINAL SIZE</div>
-        
         <div class="button-group">
             <a id="reviewBtn" class="btn" target="_blank">Leave Us A Review</a>
             <button class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
             <a id="shareBtn" class="btn btn-grad">Share</a>
         </div>
     </div>
-
     <div class="footer-main">POWERED BY ROD2REEL</div>
 </div>
 
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
 const TOKEN = 'patODjpFQhnsR92tl.5c80e0baa73a4b2099a83fead58c6cf8ac9811041b7077f031f95d5db82e8430';
-const BASE = 'appGGs07d4FB6htwg';
-const TABLE = 'tblCYkMaAOHrX0nwN';
+const BASE = 'app3pbcDqGLbnMq7b'; // New Base ID
+const TABLE = 'tblJ2WEQiArPfdowy'; // 'Delivery' Table ID
 
 const videoElement = document.getElementById('video');
 
-function setMeta(name, content) {
-    let el = document.querySelector(`meta[property="${name}"]`);
-    if (el) el.setAttribute('content', content);
-}
-
 async function load() {
     if (!id) return;
-    const formula = encodeURIComponent(`OR({Video ID}="${id}", {lookupId}="${id}")`);
+    // Searches formId, Video ID, or the direct Record ID
+    const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}", RECORD_ID()="${id}")`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
     const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
     const data = await res.json();
-    if (!data.records.length) return;
+    if (!data.records || !data.records.length) return;
 
     const f = data.records[0].fields;
+    
+    // Handle Charter Name (Lookup array from 'The Engine')
     let name = f['Charter Name'] || "Your Stay";
     name = Array.isArray(name) ? name[0] : name;
     document.getElementById('bizName').innerText = name.toUpperCase();
@@ -183,11 +71,7 @@ async function load() {
     const videoUrl = f['Video URL'];
     videoElement.src = videoUrl;
 
-    let thumb = videoUrl.replace('/upload/', '/upload/so_0,l_play-button,fl_layer_apply/').replace('.mp4', '.jpg');
-    setMeta("og:title", name + " Video");
-    setMeta("og:image", thumb);
-    setMeta("og:url", window.location.href);
-
+    // Handle Review Link (Lookup array from 'The Engine')
     let review = f['Review'] || f['GMB Review Link'];
     if (review) {
         document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review;
@@ -207,6 +91,5 @@ function downloadVideo() {
 
 load();
 </script>
-
 </body>
 </html>
