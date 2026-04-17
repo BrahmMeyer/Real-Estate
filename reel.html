@@ -10,19 +10,18 @@
             --navy:#0A192F; 
             --pearl:#FDFBF7; 
             --accent:#E2E8F0; 
-            --dark-yellow:#E6B800; 
+            /* Gold Dark Gradient */
+            --gold-grad: linear-gradient(135deg, #B8860B 0%, #8B6508 100%); 
             --blue-grad: linear-gradient(135deg, #0A192F 0%, #0047AB 100%); 
         }
         * { box-sizing: border-box; }
         body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
         
         #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; flex-direction: column; text-align: center; padding: 20px; }
-        
-        #main { display: none; height: 100%; display: flex; flex-direction: column; padding: 10px 20px; max-width: 450px; margin: 0 auto; text-align: center; }
+        #main { display: none; height: 100%; flex-direction: column; padding: 10px 20px; max-width: 450px; margin: 0 auto; text-align: center; }
         
         .biz-name { font-size: 18px; font-weight: 900; margin: 15px 0; text-transform: uppercase; flex-shrink: 0; }
         
-        /* This container now stretches to fill available vertical space */
         .content-area { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; width: 100%; }
         
         .video-wrap { width: 100%; flex-grow: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--accent); display: flex; align-items: center; position: relative; }
@@ -34,8 +33,8 @@
         
         .btn { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; display: block; text-transform: uppercase; text-decoration: none; transition: 0.2s; text-align: center; border: none; }
         
-        /* Darker Yellow for Review Button */
-        #reviewBtn { background: var(--dark-yellow); color: #000; display: none; }
+        /* Review Button - Gold Dark Gradient */
+        #reviewBtn { background: var(--gold-grad); color: #fff; display: none; }
         .btn-grad { background: var(--blue-grad); color: #fff; }
         
         .footer-main { font-size: 8px; padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; flex-shrink: 0; }
@@ -47,7 +46,7 @@
     <div id="loaderText">FINDING YOUR REEL...</div>
 </div>
 
-<div id="main" style="display:none;">
+<div id="main">
     <div id="bizName" class="biz-name"></div>
     <div class="content-area">
         <div class="video-wrap">
@@ -70,10 +69,7 @@ const BASE = 'app3pbcDqGLbnMq7b';
 const TABLE = 'tblJ2WEQiArPfdowy'; 
 
 async function load() {
-    if (!id) {
-        document.getElementById('loaderText').innerText = "NO ID PROVIDED";
-        return;
-    }
+    if (!id) return;
     
     const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}")`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
@@ -88,6 +84,8 @@ async function load() {
         }
 
         const f = data.records[0].fields;
+        
+        // Link Header to Charter Name
         let name = f['Charter Name'] || "Your Stay";
         if (Array.isArray(name)) name = name[0];
         document.getElementById('bizName').innerText = name.toUpperCase();
@@ -97,7 +95,8 @@ async function load() {
             document.getElementById('video').src = videoUrl;
         }
 
-        let review = f['Review'] || f['GMB Review Link'];
+        // Link Review Button to GMB Review Link
+        let review = f['GMB Review Link'] || f['Review'];
         if (review) {
             document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review;
             document.getElementById('reviewBtn').style.display = 'block';
