@@ -52,9 +52,7 @@
         </div>
 
         <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
-
-        <!-- NEW SHARE BUTTON -->
-        <a id="shareBtn" class="btn btn-secondary">Share</a>
+        <button class="btn btn-secondary" onclick="openShare()">Share</button>
 
         <img id="bizLogo" alt="Logo">
         <div class="footer-main">POWERED BY ROD2REEL</div>
@@ -64,10 +62,10 @@
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
 const TOKEN = 'YOUR_TOKEN';
-const BASE = 'appGGs07d4FB6htwg';
-const TABLE = 'tblCYkMaAOHrX0nwN';
+const BASE = 'YOUR_BASE';
+const TABLE = 'YOUR_TABLE';
 
-let charterName = "My Stay";
+let shareName = "My Stay";
 
 async function load() {
     if (!id) return;
@@ -80,13 +78,11 @@ async function load() {
         if (!data.records || data.records.length === 0) return;
         const f = data.records[0].fields;
 
-        let bName = f['Business Name'] || f['Charter Name'] || "PRO STUDIO";
-        charterName = Array.isArray(bName) ? bName[0] : bName;
+        // SAFE NAME ONLY (no charter dependency)
+        let bName = f['Business Name'] || "PRO STUDIO";
+        shareName = Array.isArray(bName) ? bName[0] : bName;
 
-        document.getElementById('bizName').innerText = charterName.toUpperCase();
-
-        // SET PAGE TITLE (for WhatsApp preview)
-        document.title = `${charterName} Video`;
+        document.getElementById('bizName').innerText = shareName.toUpperCase();
 
         document.getElementById('video').src = (f['Video URL'] || "") + "?t=" + new Date().getTime();
 
@@ -108,9 +104,6 @@ async function load() {
             document.getElementById('reviewBtn').style.display = 'block';
         }
 
-        // SET SHARE BUTTON LINK
-        document.getElementById('shareBtn').href = `https://delivery.rod2reel.com/send.html?id=${id}&name=${encodeURIComponent(charterName)}`;
-
         document.getElementById('loader').style.display = 'none';
         document.getElementById('main').style.display = 'block';
     } catch (e) { 
@@ -121,10 +114,24 @@ async function load() {
 function downloadVideo() {
     let url = document.getElementById('video').src.split('?')[0];
     if (url && url.includes('cloudinary')) {
-        const cleanName = `${charterName} Stay`.replace(/\s+/g, '_');
-        url = url.replace('/upload/', `/upload/fl_attachment:${cleanName}/`);
+        url = url.replace('/upload/', `/upload/fl_attachment:${encodeURIComponent(shareName + ' Stay')}/`);
     }
     window.open(url, '_blank');
+}
+
+function openShare() {
+    const phone = prompt("Enter mobile number");
+    if (!phone) return;
+
+    const clean = phone.replace(/\D/g, '');
+    const link = `https://delivery.rod2reel.com/reel.html?id=${id}`;
+    const msg = `My stay at ${shareName}: ${link}`;
+
+    if (confirm("Send via WhatsApp? OK = WhatsApp, Cancel = SMS")) {
+        window.location.href = `https://wa.me/${clean}?text=${encodeURIComponent(msg)}`;
+    } else {
+        window.location.href = `sms:${clean}?&body=${encodeURIComponent(msg)}`;
+    }
 }
 
 load();
