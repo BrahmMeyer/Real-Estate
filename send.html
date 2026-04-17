@@ -12,7 +12,6 @@ body { background:var(--pearl); font-family:sans-serif; margin:0; display:flex; 
 .card { background:#fff; padding:30px; border-radius:20px; border:1px solid #E2E8F0; width: 100%; max-width: 350px; box-sizing: border-box; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 h2 { text-transform:uppercase; font-size:16px; margin-bottom:25px; color: var(--navy); text-align:center; }
 
-/* Forces input and buttons to be identical width */
 input, .btn { width: 100%; box-sizing: border-box; display: block; padding: 16px; border-radius: 10px; font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; transition: 0.2s; text-decoration: none; text-align: center; }
 
 input { border: 1px solid #E2E8F0; background: #fafafa; }
@@ -29,14 +28,13 @@ input:focus { outline: none; border-color: var(--text-blue); }
 <body>
 <div class="card">
     <h2>Share Your Reel</h2>
-    <input type="tel" id="input" placeholder="Enter Mobile Number">
+    <input type="tel" id="input" placeholder="+ Country Code & Number">
     <button class="btn btn-wa" onclick="send('wa')">Send via WhatsApp</button>
     <button class="btn btn-sms" onclick="send('sms')">Send via Text</button>
 </div>
 
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
-
 const TOKEN = 'patODjpFQhnsR92tl.5c80e0baa73a4b2099a83fead58c6cf8ac9811041b7077f031f95d5db82e8430';
 const BASE = 'appGGs07d4FB6htwg';
 const TABLE = 'tblCYkMaAOHrX0nwN';
@@ -56,10 +54,14 @@ async function loadName() {
 }
 
 function send(type) {
-    let phone = document.getElementById('input').value.replace(/\D/g,'');
+    let rawInput = document.getElementById('input').value.trim();
+    let phone = rawInput.replace(/\D/g,'');
     
-    // FIX: Automatically handle SA numbers missing country code
-    if (phone.startsWith('0') && phone.length === 10) {
+    // Logic for International vs Local
+    if (rawInput.startsWith('+')) {
+        // User typed a plus, keep as is
+    } else if (phone.startsWith('0') && phone.length === 10) {
+        // Local SA number, fix to 27
         phone = '27' + phone.substring(1);
     }
 
@@ -69,7 +71,9 @@ function send(type) {
     if (type === 'wa') {
         window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
     } else {
-        window.location.href = `sms:${phone}?&body=${encodeURIComponent(msg)}`;
+        // SMS works best with the + for international
+        let smsPhone = rawInput.startsWith('+') ? rawInput : phone;
+        window.location.href = `sms:${smsPhone}?&body=${encodeURIComponent(msg)}`;
     }
 }
 
