@@ -31,8 +31,8 @@
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
 const TOKEN = 'patODjpFQhnsR92tl.5c80e0baa73a4b2099a83fead58c6cf8ac9811041b7077f031f95d5db82e8430';
-const BASE = 'app3pbcDqGLbnMq7b'; // Updated Base
-const TABLE = 'tblJ2WEQiArPfdowy'; // Updated Table
+const BASE = 'app3pbcDqGLbnMq7b'; 
+const TABLE = 'tblJ2WEQiArPfdowy'; 
 
 let charterName = "My Stay";
 
@@ -55,7 +55,7 @@ function send(type) {
     let phone = rawInput.replace(/\D/g,'');
     
     if (rawInput.startsWith('+')) {
-        // International
+        // Leave it
     } else if (phone.startsWith('0') && phone.length === 10) {
         phone = '27' + phone.substring(1);
     }
