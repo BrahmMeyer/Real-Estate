@@ -1,38 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Video</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; }
-        body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; }
-        #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-        #main { display: none; padding: 40px 20px; }
-        .biz-name { font-size: 24px; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; }
-        .container { max-width: 400px; margin: auto; }
-        .video-wrap { border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--accent); margin-bottom: 20px; }
-        video { width: 100%; }
-        .btn { width: 100%; padding: 16px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none; display: block; text-transform: uppercase; margin-bottom: 12px; }
-        #reviewBtn { background: var(--navy); color: #fff; display:none; }
-        .btn-secondary { border:2px solid var(--navy); background:transparent; }
-        .footer-main { font-size: 9px; margin-top: 20px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Video</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; }
+body { background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; text-align: center; margin: 0; }
+
+#loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; flex-direction: column; padding: 20px; }
+#main { display: none; padding: 40px 20px; }
+
+.biz-name { font-size: 24px; font-weight: 900; margin-bottom: 25px; text-transform: uppercase; }
+
+.container { max-width: 400px; margin: auto; }
+
+.video-wrap { border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--accent); margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+video { width: 100%; display: block; }
+
+.btn {
+width: 100%;
+padding: 16px;
+border-radius: 10px;
+font-weight: 700;
+font-size: 14px;
+cursor: pointer;
+text-decoration: none;
+display: block;
+text-transform: uppercase;
+margin-bottom: 12px;
+transition: 0.2s;
+}
+
+#reviewBtn { background: var(--navy); color: #fff; display:none; border: none; }
+.btn-secondary { border:2px solid var(--navy); background:transparent; color: var(--navy); }
+.btn:active { opacity: 0.7; }
+
+.footer-main { font-size: 9px; margin-top: 20px; opacity: 0.6; letter-spacing: 1px; }
+</style>
 </head>
+
 <body>
 
-<div id="loader">GENERATING...</div>
+<div id="loader">
+    <div id="loaderText">PREPARING YOUR HIGHLIGHT REEL...</div>
+</div>
 
 <div id="main">
     <div id="bizName" class="biz-name"></div>
+
     <div class="container">
         <div class="video-wrap">
             <video id="video" controls playsinline></video>
         </div>
+
         <a id="reviewBtn" class="btn" target="_blank">Leave A Review</a>
+
         <button class="btn btn-secondary" onclick="downloadVideo()">Download Reel</button>
-        <a id="shareBtn" class="btn btn-secondary">Share</a>
+
+        <a id="shareBtn" class="btn btn-secondary">Share with Friends</a>
+
         <div class="footer-main">POWERED BY ROD2REEL</div>
     </div>
 </div>
@@ -40,55 +70,73 @@
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
 
-const TOKEN = 'YOUR_TOKEN';
-const BASE = 'YOUR_BASE';
-const TABLE = 'YOUR_TABLE';
+// TOKENS INTEGRATED
+const TOKEN = 'patN1QvygDdKNlLG3.550efc0913e840069b3dbb5fd7cecdc19074b7d813b5320469fe8ddf91b67411';
+const BASE = 'app3pbcDqGLbnMq7b'; 
+const TABLE = 'tblJ2WEQiArPfdowy'; 
 
 async function load() {
-    if (!id) return;
-
-    const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}")`);
-    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
-
-    const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${TOKEN}` }
-    });
-
-    const data = await res.json();
-
-    if (!data.records || !data.records.length) {
-        console.error("No record found");
+    if (!id) {
+        document.getElementById('loaderText').innerText = "ERROR: NO VIDEO ID DETECTED";
         return;
     }
 
-    const f = data.records[0].fields;
+    // Checking both Video ID and formId to ensure QR codes work
+    const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}")`);
+    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
-    let name = f['Charter Name'] || "Your Stay";
-    if (Array.isArray(name)) name = name[0];
-    document.getElementById('bizName').innerText = name.toUpperCase();
+    try {
+        const res = await fetch(url, {
+            headers: { Authorization: `Bearer ${TOKEN}` }
+        });
 
-    const videoUrl = f['Video URL'];
-    document.getElementById('video').src = videoUrl;
+        const data = await res.json();
 
-    let review = f['Review'] || f['GMB Review Link'];
-    if (review) {
-        let r = Array.isArray(review) ? review[0] : review;
-        document.getElementById('reviewBtn').href = r;
-        document.getElementById('reviewBtn').style.display = 'block';
+        if (!data.records || !data.records.length) {
+            document.getElementById('loaderText').innerText = "STILL GENERATING... REFRESH IN 10s";
+            return;
+        }
+
+        const f = data.records[0].fields;
+
+        // Display Business Name
+        let name = f['Charter Name'] || "Your Stay";
+        if (Array.isArray(name)) name = name[0];
+        document.getElementById('bizName').innerText = name.toUpperCase();
+
+        // Load Video
+        const videoUrl = f['Video URL'];
+        if (videoUrl) {
+            document.getElementById('video').src = videoUrl;
+        }
+
+        // Handle Review Button
+        let review = f['Review'] || f['GMB Review Link'];
+        if (review) {
+            let r = Array.isArray(review) ? review[0] : review;
+            document.getElementById('reviewBtn').href = r;
+            document.getElementById('reviewBtn').style.display = 'block';
+        }
+
+        document.getElementById('shareBtn').href = `send.html?id=${id}`;
+
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('main').style.display = 'block';
+    } catch (e) {
+        document.getElementById('loaderText').innerText = "CONNECTION ERROR - PLEASE TRY AGAIN";
     }
-
-    document.getElementById('shareBtn').href = `send.html?id=${id}`;
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('main').style.display = 'block';
 }
 
 function downloadVideo() {
     let url = document.getElementById('video').src;
-    url = url.replace('/upload/', '/upload/fl_attachment/');
-    window.open(url, '_blank');
+    if (url) {
+        url = url.replace('/upload/', '/upload/fl_attachment/');
+        window.open(url, '_blank');
+    }
 }
 
 load();
 </script>
+
 </body>
 </html>
