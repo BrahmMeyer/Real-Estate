@@ -46,41 +46,62 @@
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
 const TOKEN = 'patODjpFQhnsR92tl.5c80e0baa73a4b2099a83fead58c6cf8ac9811041b7077f031f95d5db82e8430';
-const BASE = 'app3pbcDqGLbnMq7b'; // New Base ID
-const TABLE = 'tblJ2WEQiArPfdowy'; // 'Delivery' Table ID
+const BASE = 'app3pbcDqGLbnMq7b'; 
+const TABLE = 'tblJ2WEQiArPfdowy'; // Confirmed from your {Delivery} URL
 
 const videoElement = document.getElementById('video');
 
 async function load() {
-    if (!id) return;
-    // Searches formId, Video ID, or the direct Record ID
+    if (!id) {
+        document.getElementById('loader').innerText = "NO ID PROVIDED";
+        return;
+    }
+    
+    // Triple search: Video ID, formId, or Record ID
     const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}", RECORD_ID()="${id}")`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
-    const data = await res.json();
-    if (!data.records || !data.records.length) return;
+    try {
+        const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
+        const data = await res.json();
+        
+        if (!data.records || data.records.length === 0) {
+            console.error("No record found in Airtable for ID:", id);
+            document.getElementById('loader').innerText = "VIDEO NOT FOUND YET...";
+            return;
+        }
 
-    const f = data.records[0].fields;
-    
-    // Handle Charter Name (Lookup array from 'The Engine')
-    let name = f['Charter Name'] || "Your Stay";
-    name = Array.isArray(name) ? name[0] : name;
-    document.getElementById('bizName').innerText = name.toUpperCase();
+        const f = data.records[0].fields;
+        
+        // BIZ NAME
+        let name = f['Charter Name'] || "Your Stay";
+        if (Array.isArray(name)) name = name[0];
+        document.getElementById('bizName').innerText = name.toUpperCase();
 
-    const videoUrl = f['Video URL'];
-    videoElement.src = videoUrl;
+        // VIDEO URL
+        const videoUrl = f['Video URL'];
+        if (videoUrl) {
+            videoElement.src = videoUrl;
+        } else {
+             document.getElementById('loader').innerText = "VIDEO URL MISSING";
+             return;
+        }
 
-    // Handle Review Link (Lookup array from 'The Engine')
-    let review = f['Review'] || f['GMB Review Link'];
-    if (review) {
-        document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review;
-        document.getElementById('reviewBtn').style.display = 'block';
+        // REVIEW BUTTON
+        let review = f['Review'] || f['GMB Review Link'];
+        if (review) {
+            document.getElementById('reviewBtn').href = Array.isArray(review) ? review[0] : review;
+            document.getElementById('reviewBtn').style.display = 'block';
+        }
+
+        document.getElementById('shareBtn').href = `send.html?id=${id}`;
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('main').style.display = 'flex';
+
+    } catch (err) {
+        console.error("Fetch Error:", err);
+        document.getElementById('loader').innerText = "CONNECTION ERROR";
     }
-
-    document.getElementById('shareBtn').href = `send.html?id=${id}`;
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('main').style.display = 'flex';
 }
 
 function downloadVideo() {
