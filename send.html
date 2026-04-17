@@ -1,77 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Share Your Reel</title>
-    <style>
-        :root { --wa-green:#25D366; --text-blue:#0047AB; --navy:#0A192F; --pearl:#FDFBF7; --grey:#666666; }
-        body { background:var(--pearl); font-family:sans-serif; margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:20px; box-sizing: border-box; }
-        .card { background:#fff; padding:30px; border-radius:20px; border:1px solid #E2E8F0; width: 100%; max-width: 350px; box-sizing: border-box; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h2 { text-transform:uppercase; font-size:16px; margin-bottom:25px; color: var(--navy); text-align:center; }
-        input, .btn { width: 100%; box-sizing: border-box; display: block; padding: 16px; border-radius: 10px; font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; transition: 0.2s; text-decoration: none; text-align: center; }
-        input { border: 1px solid #E2E8F0; background: #fafafa; }
-        .btn { cursor: pointer; border: none; }
-        .btn-wa { border: 2px solid var(--wa-green); color: var(--wa-green); background: white; }
-        .btn-sms { border: 2px solid var(--text-blue); color: var(--text-blue); background: white; }
-        .btn-wa:hover { background: var(--wa-green); color: white; }
-        .btn-sms:hover { background: var(--text-blue); color: white; }
-        .hint { font-size: 11px; color: var(--grey); text-align: center; margin-bottom: 15px; font-weight: 500; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Share Reel</title>
+
+<style>
+:root { --navy:#0A192F; --pearl:#FDFBF7; }
+
+body {
+background: var(--pearl);
+font-family: sans-serif;
+text-align: center;
+padding: 40px;
+}
+
+.card {
+background: #fff;
+padding: 30px;
+border-radius: 20px;
+max-width: 350px;
+margin:auto;
+}
+
+input {
+width:100%;
+padding:15px;
+margin-bottom:15px;
+}
+
+.btn {
+width:100%;
+padding:15px;
+border-radius:10px;
+margin-bottom:10px;
+cursor:pointer;
+}
+</style>
 </head>
+
 <body>
+
 <div class="card">
     <h2>Share Your Reel</h2>
-    <input type="tel" id="input" placeholder="+ Country Code & Number">
-    <button class="btn btn-wa" onclick="send('wa')">Send via WhatsApp</button>
-    <button class="btn btn-sms" onclick="send('sms')">Send via Text</button>
-    <div class="hint">Press button to access your Phonebook</div>
+
+    <input id="input" type="tel" placeholder="Enter Mobile Number">
+
+    <button class="btn" onclick="send('wa')">WhatsApp</button>
+    <button class="btn" onclick="send('sms')">Text</button>
 </div>
 
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
-const TOKEN = 'patN1QvygDdKNlLG3.550efc0913e840069b3dbb5fd7cecdc19074b7d813b5320469fe8ddf91b67411';
-const BASE = 'app3pbcDqGLbnMq7b'; 
-const TABLE = 'tblJ2WEQiArPfdowy'; 
-
-let charterName = "My Stay";
-
-async function loadName() {
-    if (!id) return;
-    const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}", RECORD_ID()="${id}")`);
-    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
-    try {
-        const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
-        const data = await res.json();
-        if (data.records && data.records.length) {
-            let name = data.records[0].fields['Charter Name'] || "My Stay";
-            charterName = Array.isArray(name) ? name[0] : name;
-        }
-    } catch(e) { console.log("Name load failed"); }
-}
 
 function send(type) {
-    let rawInput = document.getElementById('input').value.trim();
-    let phone = rawInput.replace(/\D/g,'');
-    
-    if (rawInput.startsWith('+')) {
-        // Keep international
-    } else if (phone.startsWith('0') && phone.length === 10) {
-        phone = '27' + phone.substring(1);
-    }
+
+    const val = document.getElementById('input').value.trim();
+    if (!val) return;
+
+    let phone = val.replace(/\D/g,'');
 
     const link = `https://delivery.rod2reel.com/reel.html?id=${id}`;
-    const msg = `Check out our highlight reel from ${charterName}: ${link}`;
+
+    const msg = `My stay: ${link}`;
 
     if (type === 'wa') {
         window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
     } else {
-        let smsPhone = rawInput.startsWith('+') ? rawInput : phone;
-        window.location.href = `sms:${smsPhone}?&body=${encodeURIComponent(msg)}`;
+        window.location.href = `sms:${phone}?&body=${encodeURIComponent(msg)}`;
     }
 }
-
-loadName();
 </script>
+
 </body>
 </html>
