@@ -6,10 +6,10 @@
 <title>Share Reel</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
 <style>
-:root { --navy:#0A192F; --pearl:#FDFBF7; --blue-grad: linear-gradient(135deg, #0A192F 0%, #0047AB 100%); }
+:root { --navy:#0A192F; --pearl:#FDFBF7; --border:#E2E8F0; --earth-slate: #4A5568; --earth-moss: #38A169; --earth-clay: #718096; --earth-wood: #2D3748; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--pearl); font-family: 'DM Sans', sans-serif; text-align: center; padding: 40px 20px; }
-.card { background: #fff; padding: 30px; border-radius: 20px; max-width: 350px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #E2E8F0; }
+.card { background: #fff; padding: 30px; border-radius: 20px; max-width: 350px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border); }
 h2 { font-size: 18px; color: var(--navy); text-transform: uppercase; margin-bottom: 25px; font-weight: 900; letter-spacing: 1px; }
 .btn { 
     width: 100%; 
@@ -29,15 +29,20 @@ h2 { font-size: 18px; color: var(--navy); text-transform: uppercase; margin-bott
     gap: 10px; 
     text-decoration: none;
     font-family: 'DM Sans', sans-serif;
+    transition: opacity 0.2s ease;
 }
+.btn:hover { opacity: 0.9; }
 .btn:last-child { margin-bottom: 0; }
-.btn-wa { background: #25D366; }
-.btn-fb { background: #1877F2; }
-.btn-x { background: #000; }
-.btn-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+
+/* Earthy Toned Buttons */
+.btn-wa { background: #2D6A4F; } /* Deep Forest Green */
+.btn-fb { background: #4682B4; } /* Slate Blue */
+.btn-x { background: #1A202C; }  /* Deep Charcoal */
+.btn-ig { background: #8B4513; } /* Saddle Brown / Leather */
+
 .tooltip { display: none; background: #0A192F; color: #fff; font-size: 11px; padding: 10px 14px; border-radius: 8px; margin-top: -5px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.5; }
 .tooltip.show { display: block; }
-svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
+svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
 </style>
 </head>
 <body>
