@@ -10,8 +10,8 @@
             --navy:#0A192F; 
             --pearl:#FDFBF7; 
             --accent:#E2E8F0; 
-            --gold-btn: #C0A34D; /* Muted Brass/Gold */
-            --blue-grad: linear-gradient(135deg, #2D3748 0%, #4A5568 100%); /* Earthy Slate Gradient */
+            --gold-btn: #C0A34D;
+            --blue-grad: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
         }
         * { box-sizing: border-box; }
         body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
@@ -64,9 +64,11 @@
 </div>
 <script>
 const id = new URLSearchParams(window.location.search).get('id');
+// FIXED: Pointing to your active Base and Table 2
 const TOKEN = 'patN1QvygDdKNlLG3.550efc0913e840069b3dbb5fd7cecdc19074b7d813b5320469fe8ddf91b67411';
-const BASE = 'app3pbcDqGLbnMq7b';
-const TABLE = 'tblJ2WEQiArPfdowy';
+const BASE = 'appWx9LdS0uWdrRzL';
+const TABLE = 'tblvUjEhTTiZU0pcI';
+
 async function load() {
     if (!id) return;
     const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}")`);
@@ -74,15 +76,25 @@ async function load() {
     try {
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
-        if (!data.records || data.records.length === 0) {
+        
+        if (!data.records || data.records.length === 0 || !data.records[0].fields['Video URL']) {
             document.getElementById('loaderText').innerText = "STILL GENERATING...";
             return;
         }
+
         const f = data.records[0].fields;
+        
+        // Display Charter Name
         let nameVal = f['Charter Name'] || "YOUR HIGHLIGHT REEL";
-        const headerTitle = Array.isArray(nameVal) ? nameVal[0] : nameVal;
-        document.getElementById('bizName').innerText = headerTitle.toString().toUpperCase();
-        if (f['Video URL']) document.getElementById('video').src = f['Video URL'];
+        document.getElementById('bizName').innerText = nameVal.toString().toUpperCase();
+        
+        // Set Video Source
+        if (f['Video URL']) {
+            document.getElementById('video').src = f['Video URL'];
+            document.getElementById('video').load();
+        }
+
+        // Handle Review Link
         let reviewRaw = f['Review'];
         if (reviewRaw) {
             let link = Array.isArray(reviewRaw) ? reviewRaw[0] : reviewRaw;
@@ -91,6 +103,7 @@ async function load() {
                 document.getElementById('reviewBtn').style.display = 'block';
             }
         }
+
         document.getElementById('shareBtn').href = `send.html?id=${id}`;
         document.getElementById('loader').style.display = 'none';
         document.getElementById('main').style.display = 'flex';
@@ -98,9 +111,12 @@ async function load() {
         document.getElementById('loaderText').innerText = "CONNECTION ERROR";
     }
 }
+
 function downloadVideo() {
     let url = document.getElementById('video').src;
-    url = url.replace('/upload/', '/upload/fl_attachment/');
+    if (url.includes('cloudinary')) {
+        url = url.replace('/upload/', '/upload/fl_attachment/');
+    }
     window.open(url, '_blank');
 }
 load();
