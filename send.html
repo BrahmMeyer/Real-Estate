@@ -3,91 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Save Your Reel</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>Share Your Reel</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --blue-grad: linear-gradient(135deg, #0A192F 0%, #0047AB 100%); }
-        * { box-sizing: border-box; }
-        body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; }
-        .container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; text-align: center; }
-        h1 { font-size: 22px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
-        p { font-size: 14px; opacity: 0.8; margin-bottom: 30px; max-width: 300px; line-height: 1.5; }
-        .btn { width: 100%; max-width: 300px; padding: 18px; border-radius: 12px; font-weight: 700; font-size: 14px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; text-decoration: none; border: none; font-family: 'DM Sans', sans-serif; background: var(--blue-grad); color: #fff; box-shadow: 0 10px 20px rgba(10, 25, 47, 0.2); transition: transform 0.2s; }
-        .btn:active { transform: scale(0.98); }
-        .footer { position: absolute; bottom: 20px; font-size: 10px; opacity: 0.5; letter-spacing: 2px; }
+        :root { 
+            --navy:#0A192F; 
+            --pearl:#FDFBF7; 
+            /* Earthy Social Colors */
+            --whatsapp: #4A5D4E; /* Forest */
+            --facebook: #3B4A6B; /* Slate */
+            --instagram: #8C6A5E; /* Terracotta */
+            --x-corp: #2C2C2C;    /* Charcoal */
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--pearl); font-family: 'DM Sans', sans-serif; text-align: center; padding: 40px 20px; color: var(--navy); }
+        
+        h2 { font-size: 18px; text-transform: uppercase; margin-bottom: 25px; font-weight: 900; letter-spacing: 2px; }
+        
+        .button-stack { width: 100%; max-width: 320px; margin: auto; display: flex; flex-direction: column; gap: 12px; }
+        
+        .btn { 
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            border: none; 
+            font-weight: 700; 
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase; 
+            color: #fff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .btn-wa { background: var(--whatsapp); }
+        .btn-fb { background: var(--facebook); }
+        .btn-x { background: var(--x-corp); }
+        .btn-ig { background: var(--instagram); }
+        
+        .btn:active { opacity: 0.8; transform: translateY(1px); }
+
+        svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
+        
+        .tooltip { display: none; background: var(--navy); color: #fff; font-size: 10px; padding: 12px; border-radius: 8px; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; line-height: 1.4; }
+        .tooltip.show { display: block; }
+        
+        .footer { margin-top: 50px; font-size: 8px; opacity: 0.4; letter-spacing: 3px; font-weight: 700; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>READY TO SHARE?</h1>
-    <p>Tap the button below to save your reel to your device for Instagram, TikTok, or Facebook.</p>
-    
-    <button id="shareBtn" class="btn">SAVE TO DEVICE</button>
+    <h2>Share Your Experience</h2>
+
+    <div class="button-stack">
+        <button class="btn btn-wa" onclick="shareWhatsApp()">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp
+        </button>
+
+        <button class="btn btn-ig" onclick="saveForInstagram()">
+            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Save For Instagram
+        </button>
+        <div class="tooltip" id="igTooltip">Video saved — Now open Instagram to share.</div>
+
+        <a class="btn btn-fb" id="fbBtn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Share On Facebook
+        </a>
+
+        <a class="btn btn-x" id="xBtn" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            Share On X
+        </a>
+    </div>
 
     <div class="footer">ROD2REEL</div>
-</div>
 
 <script>
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('id');
+const reelURL = `https://delivery.rod2reel.com/reel.html?id=${id}`;
+const shareText = `Check out my highlight reel: ${reelURL}`;
 
+// 1. WhatsApp Action
+function shareWhatsApp() {
+    window.location.href = `whatsapp://send?text=${encodeURIComponent(shareText)}`;
+}
+
+// 2. FB & X Links
+document.getElementById('fbBtn').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(reelURL)}`;
+document.getElementById('xBtn').href = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+
+// 3. Instagram / Download Logic
 const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
 const BASE = 'appMDAS9DBPWtBiYZ';
 const TABLE = 'tblvqMOioHwGPLIik';
 
 async function saveForInstagram() {
-    if (!id) {
-        alert("No ID found in URL");
-        return;
-    }
-
-    // Clean ID logic
+    if (!id) return;
     const cleanId = id.split(' ')[0].split('style')[0].trim();
-    
-    // Changing button state to show it's working
-    const btn = document.getElementById('shareBtn');
-    const originalText = btn.innerText;
-    btn.innerText = "PREPARING DOWNLOAD...";
-    btn.style.opacity = "0.5";
-
     const formula = encodeURIComponent(`{ID}="${cleanId}"`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
     try {
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
-
         if (data.records && data.records.length > 0) {
-            const f = data.records[data.records.length - 1].fields;
-            let vUrl = f['Video URL'];
-
+            let vUrl = data.records[data.records.length - 1].fields['Video URL'];
             if (vUrl && vUrl.includes('cloudinary')) {
                 vUrl = vUrl.replace('/upload/', '/upload/fl_attachment/');
                 window.open(vUrl, '_blank');
-                btn.innerText = "DOWNLOAD STARTED";
-            } else {
-                alert("Video not ready yet.");
-                btn.innerText = originalText;
+                document.getElementById('igTooltip').classList.add('show');
             }
-        } else {
-            alert("Record not found.");
-            btn.innerText = originalText;
         }
     } catch (err) {
-        alert("Error connecting to server.");
-        btn.innerText = originalText;
+        console.error(err);
     }
-    btn.style.opacity = "1";
 }
-
-// Attach function to the button
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('shareBtn');
-    if (btn) {
-        btn.onclick = saveForInstagram;
-    }
-});
 </script>
 
 </body>
