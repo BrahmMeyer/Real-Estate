@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Your Video</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --gold-btn: #e0bf0b; --blue-grad: linear-gradient(135deg, #0A192F 0%, #0047AB 100%); }
         * { box-sizing: border-box; }
@@ -16,11 +16,11 @@
         .video-wrap { width: 100%; flex-grow: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--accent); display: flex; align-items: center; position: relative; }
         video { width: 100%; height: 100%; object-fit: contain; display: block; }
         .video-hint { font-size: 10px; font-weight: 700; color: var(--navy); opacity: 0.8; margin: 10px 0; letter-spacing: 0.5px; flex-shrink: 0; text-transform: uppercase; }
-        .button-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; flex-shrink: 0; width: 100%; }
+        .button-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; flex-shrink: 0; width: 100%; }
         .btn { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 13px; letter-spacing: 1px; cursor: pointer; display: block; text-transform: uppercase; text-decoration: none; text-align: center; border: none; font-family: 'DM Sans', sans-serif; }
         #reviewBtn { background: var(--gold-btn); color: #000; display: none; }
         .btn-grad { background: var(--blue-grad); color: #fff; }
-        .footer-main { font-size: 8px; padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; flex-shrink: 0; }
+        .footer-main { font-size: 8px; padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; flex-shrink: 0; line-height: 1.6; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -36,38 +36,32 @@
             <a id="shareBtn" class="btn btn-grad">Share</a>
         </div>
     </div>
-    <div class="footer-main">POWERED BY ROD2REEL</div>
+    <div class="footer-main">
+        STAY2REEL<br>
+        +27 (0) 68 364 4061<br>
+        listings2reels@gmail.com
+    </div>
 </div>
 
 <script>
 async function load() {
     const urlParams = new URLSearchParams(window.location.search);
     const rawId = urlParams.get('id');
-
-    if (!rawId) {
-        document.getElementById('loaderText').innerText = "❌ ERROR: NO ID IN URL";
-        return;
-    }
-
-    // EXTRA SAFETY: Force clean the ID in case the URL is malformed
-    const id = rawId.split(' ')[0].split('style')[0].trim();
-
+    if (!rawId) { document.getElementById('loaderText').innerText = "❌ ERROR: NO ID"; return; }
+    const id = rawId.split(' ')[0].trim();
     const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
     const BASE = 'appMDAS9DBPWtBiYZ';
     const TABLE = 'tblvqMOioHwGPLIik';
-
     const formula = encodeURIComponent(`{ID}="${id}"`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
     try {
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
-        
         if (data.records && data.records.length > 0) {
             const f = data.records[data.records.length - 1].fields;
             document.getElementById('bizName').innerText = (f['Charter Name'] || "YOUR REEL").toUpperCase();
             if (f['Video URL']) document.getElementById('video').src = f['Video URL'];
-
             if (f['Review']) {
                 const link = Array.isArray(f['Review']) ? f['Review'][0] : f['Review'];
                 if (link.toString().includes('http')) {
@@ -79,13 +73,12 @@ async function load() {
             document.getElementById('loader').style.display = 'none';
             document.getElementById('main').style.display = 'flex';
         } else {
-            document.getElementById('loaderText').innerText = "❌ REEL NOT FOUND FOR ID: " + id;
+            document.getElementById('loaderText').innerText = "❌ REEL NOT FOUND";
         }
     } catch (err) {
         document.getElementById('loaderText').innerText = "⚠️ CONNECTION ERROR";
     }
 }
-
 function downloadVideo() {
     let vUrl = document.getElementById('video').src;
     if (vUrl && vUrl.includes('cloudinary')) {
