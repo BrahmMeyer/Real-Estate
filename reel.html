@@ -4,94 +4,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Your Video</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --gold:#C0A34D; --blue-grad: linear-gradient(135deg, #2D3748 0%, #4A5568 100%); }
+        :root { 
+            --navy:#0A192F; 
+            --pearl:#FDFBF7; 
+            --accent:#E2E8F0; 
+            --gold-btn: #C0A34D; 
+            --blue-grad: linear-gradient(135deg, #2D3748 0%, #4A5568 100%); 
+        }
+        * { box-sizing: border-box; }
         body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
         #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; flex-direction: column; text-align: center; padding: 20px; }
         #main { display: none; height: 100%; flex-direction: column; padding: 10px 20px; max-width: 450px; margin: 0 auto; text-align: center; }
-        .biz-name { font-size: 18px; font-weight: 700; margin: 15px 0; text-transform: uppercase; color: var(--navy); min-height: 24px; }
-        .video-wrap { width: 100%; flex-grow: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--accent); display: flex; align-items: center; }
-        video { width: 100%; height: 100%; object-fit: contain; }
-        .btn { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; text-decoration: none; text-align: center; border: none; margin-bottom: 8px; display: block; font-family: 'DM Sans', sans-serif; }
-        #reviewBtn { background: var(--gold); color: #fff; display: none; }
+        .biz-name { font-size: 18px; font-weight: 900; margin: 15px 0; text-transform: uppercase; flex-shrink: 0; color: var(--navy); min-height: 24px; }
+        .content-area { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; width: 100%; }
+        .video-wrap { width: 100%; flex-grow: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--accent); display: flex; align-items: center; position: relative; }
+        video { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .video-hint { font-size: 10px; font-weight: 700; color: var(--navy); opacity: 0.8; margin: 10px 0; letter-spacing: 0.5px; flex-shrink: 0; text-transform: uppercase; }
+        .button-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; flex-shrink: 0; width: 100%; }
+        .btn { 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 10px; 
+            font-weight: 700; 
+            font-size: 13px; 
+            letter-spacing: 1px;
+            cursor: pointer; 
+            display: block; 
+            text-transform: uppercase; 
+            text-decoration: none; 
+            text-align: center; 
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+        }
+        #reviewBtn { background: var(--gold-btn); color: #fff; display: none; }
         .btn-grad { background: var(--blue-grad); color: #fff; }
-        #errorDisplay { color: red; font-size: 12px; margin-top: 10px; display: none; font-family: monospace; }
+        .footer-main { font-size: 8px; padding-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; flex-shrink: 0; }
+        #debug { font-size: 10px; color: red; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
-
 <div id="loader">
     <div id="loaderText">FINDING YOUR REEL...</div>
-    <div id="errorDisplay"></div>
+    <div id="debug"></div>
 </div>
-
 <div id="main">
     <div id="bizName" class="biz-name"></div>
-    <div class="video-wrap"><video id="video" playsinline controls></video></div>
-    <p style="font-size: 10px; margin: 10px 0; font-weight: 700;">PREVIEW — TAP FULLSCREEN FOR ORIGINAL SIZE</p>
-    <div class="button-group">
-        <a id="reviewBtn" target="_blank" class="btn">Leave Us A Review</a>
-        <button class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
-        <a id="shareBtn" class="btn btn-grad">Share</a>
+    <div class="content-area">
+        <div class="video-wrap">
+            <video id="video" playsinline controls></video>
+        </div>
+        <div class="video-hint">PREVIEW — TAP FULLSCREEN FOR ORIGINAL SIZE</div>
+        <div class="button-group">
+            <a id="reviewBtn" class="btn" target="_blank">Leave Us A Review</a>
+            <button class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
+            <a id="shareBtn" class="btn btn-grad">Share</a>
+        </div>
     </div>
+    <div class="footer-main">POWERED BY ROD2REEL</div>
 </div>
-
 <script>
-// Use the EXACT token you provided
+const id = new URLSearchParams(window.location.search).get('id');
+
+/** * USING YOUR NEWEST TOKEN AND BASE/TABLE 
+ */
 const TOKEN = 'patL3Q58sft42r9m6.edd9d972648dafe2db31136bfa425eb0b6e3399af91b05ab6a4a976c9bea24c9';
 const BASE = 'appWx9LdS0uWdrRzL';
 const TABLE = 'tblvUjEhTTiZU0pcI';
 
-async function start() {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
+async function load() {
+    if (!id) { document.getElementById('loaderText').innerText = "NO ID PROVIDED"; return; }
 
-    if (!id) {
-        document.getElementById('loaderText').innerText = "ERROR: NO ID IN URL";
-        return;
-    }
+    // This formula checks BOTH Video ID and formId to be 100% safe
+    const formula = encodeURIComponent(`OR({Video ID}="${id}", {formId}="${id}")`);
+    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
     try {
-        // MATCHING THE CASE: {formId} with capital I
-        const formula = encodeURIComponent(`{formId}="${id.trim()}"`);
-        const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
-
-        const res = await fetch(url, {
-            headers: { 'Authorization': `Bearer ${TOKEN}` }
+        const res = await fetch(url, { 
+            headers: { Authorization: `Bearer ${TOKEN}` } 
         });
-
         const data = await res.json();
 
         if (!res.ok) {
-            document.getElementById('loaderText').innerText = "AIRTABLE CONNECTION ERROR";
-            document.getElementById('errorDisplay').innerText = data.error.message;
-            document.getElementById('errorDisplay').style.display = 'block';
+            document.getElementById('loaderText').innerText = "SYSTEM ERROR";
+            document.getElementById('debug').innerText = data.error.message;
+            document.getElementById('debug').style.display = 'block';
             return;
         }
 
         if (!data.records || data.records.length === 0) {
-            document.getElementById('loaderText').innerText = "NO VIDEO FOUND FOR THIS ID";
+            document.getElementById('loaderText').innerText = "STILL GENERATING...";
             return;
         }
 
-        // Get the most recent record with a video
-        const record = data.records.reverse().find(r => r.fields['Video URL']);
+        // Get newest record
+        const f = data.records.reverse().find(r => r.fields['Video URL']).fields;
+
+        let nameVal = f['Charter Name'] || "YOUR HIGHLIGHT REEL";
+        const headerTitle = Array.isArray(nameVal) ? nameVal[0] : nameVal;
+        document.getElementById('bizName').innerText = headerTitle.toString().toUpperCase();
         
-        if (!record || !record.fields['Video URL']) {
-            document.getElementById('loaderText').innerText = "VIDEO STILL PROCESSING...";
-            return;
+        if (f['Video URL']) {
+            document.getElementById('video').src = f['Video URL'];
+            document.getElementById('video').load();
         }
 
-        const f = record.fields;
-        document.getElementById('bizName').innerText = (f['Charter Name'] || "YOUR REEL").toUpperCase();
-        document.getElementById('video').src = f['Video URL'];
-        document.getElementById('video').load();
-
-        if (f['Review']) {
-            const rLink = Array.isArray(f['Review']) ? f['Review'][0] : f['Review'];
-            document.getElementById('reviewBtn').href = rLink;
-            document.getElementById('reviewBtn').style.display = 'block';
+        let reviewRaw = f['Review'];
+        if (reviewRaw) {
+            let link = Array.isArray(reviewRaw) ? reviewRaw[0] : reviewRaw;
+            if (link.toString().includes("http")) {
+                document.getElementById('reviewBtn').href = link;
+                document.getElementById('reviewBtn').style.display = 'block';
+            }
         }
 
         document.getElementById('shareBtn').href = `send.html?id=${id}`;
@@ -99,21 +124,18 @@ async function start() {
         document.getElementById('main').style.display = 'flex';
 
     } catch (err) {
-        document.getElementById('loaderText').innerText = "SYSTEM CRASH";
-        document.getElementById('errorDisplay').innerText = err.message;
-        document.getElementById('errorDisplay').style.display = 'block';
+        document.getElementById('loaderText').innerText = "CONNECTION ERROR";
     }
 }
 
 function downloadVideo() {
-    let vUrl = document.getElementById('video').src;
-    if (vUrl.includes('cloudinary')) vUrl = vUrl.replace('/upload/', '/upload/fl_attachment/');
-    window.open(vUrl, '_blank');
+    let url = document.getElementById('video').src;
+    if (url.includes('cloudinary')) {
+        url = url.replace('/upload/', '/upload/fl_attachment/');
+    }
+    window.open(url, '_blank');
 }
-
-// Fire the function
-start();
+load();
 </script>
-
 </body>
 </html>
