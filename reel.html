@@ -1,42 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Your Video</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --gold:#C0A34D; --blue-grad: linear-gradient(135deg, #2D3748 0%, #4A5568 100%); }
+        body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
+        #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; flex-direction: column; text-align: center; padding: 20px; }
+        #main { display: none; height: 100%; flex-direction: column; padding: 10px 20px; max-width: 450px; margin: 0 auto; text-align: center; }
+        .biz-name { font-size: 18px; font-weight: 700; margin: 15px 0; text-transform: uppercase; color: var(--navy); min-height: 24px; }
+        .video-wrap { width: 100%; flex-grow: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--accent); display: flex; align-items: center; }
+        video { width: 100%; height: 100%; object-fit: contain; }
+        .btn { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; text-decoration: none; text-align: center; border: none; margin-bottom: 8px; display: block; font-family: 'DM Sans', sans-serif; }
+        #reviewBtn { background: var(--gold); color: #fff; display: none; }
+        .btn-grad { background: var(--blue-grad); color: #fff; }
+    </style>
+</head>
+<body>
+<div id="loader"><div id="loaderText">FINDING YOUR REEL...</div></div>
+<div id="main">
+    <div id="bizName" class="biz-name"></div>
+    <div class="video-wrap"><video id="video" playsinline controls></video></div>
+    <p style="font-size: 10px; margin: 10px 0; font-weight: 700;">PREVIEW — TAP FULLSCREEN FOR ORIGINAL SIZE</p>
+    <div class="button-group">
+        <a id="reviewBtn" target="_blank" class="btn">Leave Us A Review</a>
+        <button class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
+        <a id="shareBtn" class="btn btn-grad">Share</a>
+    </div>
+</div>
 <script>
-const id = new URLSearchParams(window.location.search).get('id');
-// UPDATED TOKEN
-const TOKEN = 'patL3Q58sft42r9m6.edd9d972648dafe2db31136bfa425eb0b6e3399af91b05ab6a4a976c9bea24c9';
-const BASE = 'appWx9LdS0uWdrRzL';
-const TABLE = 'tblvUjEhTTiZU0pcI'; 
+// PASTE YOUR "PUBLISH TO WEB" CSV LINK HERE
+const CSV_URL = 'PASTE_YOUR_PUBLISHED_CSV_LINK_HERE';
 
 async function load() {
-    if (!id) { document.getElementById('loaderText').innerText = "NO ID PROVIDED"; return; }
-    const formula = encodeURIComponent(`{formId}="${id.trim()}"`);
-    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
-    
-    try {
-        const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
-        const data = await res.json();
-        
-        if (res.status === 403 || res.status === 401) {
-            document.getElementById('loaderText').innerText = "AUTH ERROR";
-            return;
-        }
+    const id = new URLSearchParams(window.location.search).get('id');
+    if (!id) return;
 
-        if (!data.records || data.records.length === 0) {
+    try {
+        const res = await fetch(CSV_URL);
+        const data = await res.text();
+        const rows = data.split('\n').map(row => row.split(','));
+        const headers = rows[0].map(h => h.trim().replace(/"/g, ''));
+        
+        // Find column indexes
+        const idIdx = headers.indexOf('formId');
+        const videoIdx = headers.indexOf('Video URL');
+        const nameIdx = headers.indexOf('Charter Name');
+        const reviewIdx = headers.indexOf('Review');
+
+        // Find the record (newest first)
+        const record = rows.slice(1).reverse().find(row => row[idIdx]?.trim().replace(/"/g, '') === id);
+
+        if (!record || !record[videoIdx]) {
             document.getElementById('loaderText').innerText = "STILL GENERATING...";
             return;
         }
 
-        const record = data.records.reverse().find(r => r.fields['Video URL']);
-        if (!record || !record.fields['Video URL']) {
-            document.getElementById('loaderText').innerText = "VIDEO NOT READY YET";
-            return;
-        }
-
-        const f = record.fields;
-        document.getElementById('bizName').innerText = (f['Charter Name'] || "YOUR REEL").toUpperCase();
-        document.getElementById('video').src = f['Video URL'];
+        document.getElementById('bizName').innerText = record[nameIdx].replace(/"/g, '').toUpperCase();
+        document.getElementById('video').src = record[videoIdx].replace(/"/g, '').trim();
         document.getElementById('video').load();
 
-        if (f['Review']) {
-            document.getElementById('reviewBtn').href = Array.isArray(f['Review']) ? f['Review'][0] : f['Review'];
+        if (record[reviewIdx] && record[reviewIdx].length > 5) {
+            document.getElementById('reviewBtn').href = record[reviewIdx].replace(/"/g, '').trim();
             document.getElementById('reviewBtn').style.display = 'block';
         }
 
@@ -55,3 +82,5 @@ function downloadVideo() {
 }
 load();
 </script>
+</body>
+</html>
