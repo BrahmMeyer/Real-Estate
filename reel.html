@@ -3,26 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Your Video</title>
+    <title>Your Video Reel</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --gold:#C0A34D; --blue-grad: linear-gradient(135deg, #2D3748 0%, #4A5568 100%); }
         body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
+        
+        /* Loader Styles */
         #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; flex-direction: column; text-align: center; padding: 20px; }
+        
+        /* Main Content (Hidden until loaded) */
         #main { display: none; height: 100%; flex-direction: column; padding: 10px 20px; max-width: 450px; margin: 0 auto; text-align: center; }
+        
         .biz-name { font-size: 18px; font-weight: 700; margin: 15px 0; text-transform: uppercase; color: var(--navy); min-height: 24px; }
         .video-wrap { width: 100%; flex-grow: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--accent); display: flex; align-items: center; }
         video { width: 100%; height: 100%; object-fit: contain; }
+        
         .btn { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; text-decoration: none; text-align: center; border: none; margin-bottom: 8px; display: block; font-family: 'DM Sans', sans-serif; }
         #reviewBtn { background: var(--gold); color: #fff; display: none; }
         .btn-grad { background: var(--blue-grad); color: #fff; }
+        
+        #errorLog { font-size: 12px; color: #ff4444; margin-top: 15px; display: none; font-family: monospace; }
     </style>
 </head>
 <body>
-<div id="loader"><div id="loaderText">FINDING YOUR REEL...</div></div>
+
+<div id="loader">
+    <div id="loaderText">LOADING YOUR REEL...</div>
+    <div id="errorLog"></div>
+</div>
+
 <div id="main">
     <div id="bizName" class="biz-name"></div>
-    <div class="video-wrap"><video id="video" playsinline controls></video></div>
+    <div class="video-wrap">
+        <video id="video" playsinline controls preload="auto"></video>
+    </div>
     <p style="font-size: 10px; margin: 10px 0; font-weight: 700;">PREVIEW — TAP FULLSCREEN FOR ORIGINAL SIZE</p>
     <div class="button-group">
         <a id="reviewBtn" target="_blank" class="btn">Leave Us A Review</a>
@@ -30,57 +45,96 @@
         <a id="shareBtn" class="btn btn-grad">Share</a>
     </div>
 </div>
-<script>
-// PASTE YOUR "PUBLISH TO WEB" CSV LINK HERE
-const CSV_URL = 'PASTE_YOUR_PUBLISHED_CSV_LINK_HERE';
 
-async function load() {
-    const id = new URLSearchParams(window.location.search).get('id');
-    if (!id) return;
+<script>
+/** * CONFIGURATION 
+ */
+const TOKEN = 'patL3Q58sft42r9m6.edd9d972648dafe2db31136bfa425eb0b6e3399af91b05ab6a4a976c9bea24c9';
+const BASE = 'appWx9LdS0uWdrRzL';
+const TABLE = 'tblvUjEhTTiZU0pcI';
+
+async function init() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    const logElement = document.getElementById('errorLog');
+
+    if (!id) {
+        document.getElementById('loaderText').innerText = "ERROR: NO ID FOUND";
+        return;
+    }
 
     try {
-        const res = await fetch(CSV_URL);
-        const data = await res.text();
-        const rows = data.split('\n').map(row => row.split(','));
-        const headers = rows[0].map(h => h.trim().replace(/"/g, ''));
-        
-        // Find column indexes
-        const idIdx = headers.indexOf('formId');
-        const videoIdx = headers.indexOf('Video URL');
-        const nameIdx = headers.indexOf('Charter Name');
-        const reviewIdx = headers.indexOf('Review');
+        const formula = encodeURIComponent(`{formId}="${id.trim()}"`);
+        const airtableUrl = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
-        // Find the record (newest first)
-        const record = rows.slice(1).reverse().find(row => row[idIdx]?.trim().replace(/"/g, '') === id);
+        const response = await fetch(airtableUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${TOKEN}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
-        if (!record || !record[videoIdx]) {
-            document.getElementById('loaderText').innerText = "STILL GENERATING...";
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(`Airtable ${response.status}: ${data.error?.message || 'Unknown Error'}`);
+        }
+
+        if (!data.records || data.records.length === 0) {
+            document.getElementById('loaderText').innerText = "STILL GENERATING...\nPLEASE REFRESH IN A MOMENT";
             return;
         }
 
-        document.getElementById('bizName').innerText = record[nameIdx].replace(/"/g, '').toUpperCase();
-        document.getElementById('video').src = record[videoIdx].replace(/"/g, '').trim();
+        // Get the latest record that actually has a Video URL
+        const record = data.records.reverse().find(r => r.fields['Video URL']);
+
+        if (!record || !record.fields['Video URL']) {
+            document.getElementById('loaderText').innerText = "VIDEO DATA NOT READY";
+            return;
+        }
+
+        const fields = record.fields;
+
+        // Populate Content
+        document.getElementById('bizName').innerText = (fields['Charter Name'] || "YOUR REEL").toUpperCase();
+        document.getElementById('video').src = fields['Video URL'];
         document.getElementById('video').load();
 
-        if (record[reviewIdx] && record[reviewIdx].length > 5) {
-            document.getElementById('reviewBtn').href = record[reviewIdx].replace(/"/g, '').trim();
+        // Handle Review Link
+        if (fields['Review']) {
+            const reviewUrl = Array.isArray(fields['Review']) ? fields['Review'][0] : fields['Review'];
+            document.getElementById('reviewBtn').href = reviewUrl;
             document.getElementById('reviewBtn').style.display = 'block';
         }
 
+        // Setup Share Link
         document.getElementById('shareBtn').href = `send.html?id=${id}`;
+
+        // Switch Screens
         document.getElementById('loader').style.display = 'none';
         document.getElementById('main').style.display = 'flex';
+
     } catch (err) {
-        document.getElementById('loaderText').innerText = "CONNECTION ERROR";
+        console.error(err);
+        document.getElementById('loaderText').innerText = "SYSTEM ERROR";
+        logElement.innerText = err.message;
+        logElement.style.display = 'block';
     }
 }
 
 function downloadVideo() {
-    let url = document.getElementById('video').src;
-    if (url.includes('cloudinary')) url = url.replace('/upload/', '/upload/fl_attachment/');
-    window.open(url, '_blank');
+    let videoUrl = document.getElementById('video').src;
+    // Force download for Cloudinary links
+    if (videoUrl.includes('cloudinary')) {
+        videoUrl = videoUrl.replace('/upload/', '/upload/fl_attachment/');
+    }
+    window.open(videoUrl, '_blank');
 }
-load();
+
+// Start the process
+init();
 </script>
+
 </body>
 </html>
