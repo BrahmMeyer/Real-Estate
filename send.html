@@ -1,20 +1,53 @@
 <script>
-const id = new URLSearchParams(window.location.search).get('id');
+// 1. Get the ID from the URL
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get('id');
+
 const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
 const BASE = 'appMDAS9DBPWtBiYZ';
 const TABLE = 'tblvqMOioHwGPLIik';
 
 async function saveForInstagram() {
-    const formula = encodeURIComponent(`TRIM({formId})="${id.trim()}"`);
+    if (!id) {
+        alert("No ID found in URL");
+        return;
+    }
+
+    // 2. Updated to use {ID} to match your new Airtable column name
+    const formula = encodeURIComponent(`{ID}="${id.trim()}"`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
+
     try {
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
+
         if (data.records && data.records.length > 0) {
-            let vUrl = data.records[0].fields['Video URL'];
-            if (vUrl.includes('cloudinary')) vUrl = vUrl.replace('/upload/', '/upload/fl_attachment/');
-            window.open(vUrl, '_blank');
+            // Get the newest record
+            const f = data.records[data.records.length - 1].fields;
+            let vUrl = f['Video URL'];
+
+            if (vUrl && vUrl.includes('cloudinary')) {
+                // This forces the browser to download the file instead of just playing it
+                vUrl = vUrl.replace('/upload/', '/upload/fl_attachment/');
+                window.open(vUrl, '_blank');
+            } else {
+                alert("Video URL not found in Airtable.");
+            }
+        } else {
+            alert("Reel record not found.");
         }
-    } catch (err) { console.error(err); }
+    } catch (err) {
+        console.error(err);
+        alert("Connection error.");
+    }
 }
+
+// 3. THIS IS THE KEY: Link the function to your button
+// Make sure your button in HTML has id="shareBtn" or add the onclick directly to the HTML
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('shareBtn');
+    if (btn) {
+        btn.onclick = saveForInstagram;
+    }
+});
 </script>
