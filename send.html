@@ -1,24 +1,18 @@
-<script>
-const id = new URLSearchParams(window.location.search).get('id');
-const reelURL = `https://delivery.rod2reel.com/reel.html?id=${id}`;
-const msg = `Check out my highlight reel: ${reelURL}`;
+async function loadReel() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id'); // This grabs whatever is in the URL (?id=xxxx)
 
-function shareWhatsApp() { 
-    window.location.href = `whatsapp://send?text=${encodeURIComponent(msg)}`; 
-}
+    if (!id) {
+        document.getElementById('loader').innerText = "❌ ERROR: NO ID FOUND";
+        return;
+    }
 
-// Update sharing links if the elements exist
-if(document.getElementById('fbBtn')) document.getElementById('fbBtn').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(reelURL)}`;
-if(document.getElementById('xBtn')) document.getElementById('xBtn').href = `https://x.com/intent/tweet?text=${encodeURIComponent(msg)}`;
-
-async function saveForInstagram() {
-    if (!id) return;
-    
     const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
     const BASE = 'appMDAS9DBPWtBiYZ';
-    const TABLE = 'tblvqMOioHwGPLIik';
-
-    const formula = encodeURIComponent(`{ID}="${id}"`);
+    const TABLE = 'tblvqMOioHwGPLIik'; // Deliver Table
+    
+    // UPDATED: Now searches the "formId" column for whatever ID is in the URL
+    const formula = encodeURIComponent(`{formId}="${id}"`); 
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
 
     try {
@@ -28,18 +22,33 @@ async function saveForInstagram() {
         const data = await res.json();
 
         if (data.records && data.records.length > 0) {
-            let videoUrl = data.records[0].fields['Video URL'];
+            const fields = data.records[0].fields;
+            
+            // Map these to your EXACT Airtable column names
+            const videoUrl = fields['Video URL'];
+            const businessName = fields['Charter Name'] || "YOUR REEL";
+
             if (videoUrl) {
-                if (videoUrl.includes('cloudinary')) {
-                    videoUrl = videoUrl.replace('/upload/', '/upload/fl_attachment/');
+                document.getElementById('bizName').innerText = businessName.toUpperCase();
+                document.getElementById('video').src = videoUrl;
+                
+                let downloadUrl = videoUrl;
+                if (downloadUrl.includes('cloudinary')) {
+                    downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
                 }
-                window.open(videoUrl, '_blank');
+                document.getElementById('dlBtn').href = downloadUrl;
+                document.getElementById('shareBtn').href = `send.html?id=${id}`;
+
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('main').style.display = 'flex';
+            } else {
+                document.getElementById('loader').innerHTML = "🎥 REEL IS STILL RENDERING...<br><br><small>Please refresh in 60 seconds.</small>";
             }
         } else {
-            alert("Video still processing. Please try again in a moment.");
+            // If Airtable returns 0 records for that ID
+            document.getElementById('loader').innerText = "❌ REEL NOT FOUND FOR ID: " + id;
         }
     } catch (err) {
-        console.error(err);
+        document.getElementById('loader').innerText = "⚠️ CONNECTION ERROR";
     }
 }
-</script>
