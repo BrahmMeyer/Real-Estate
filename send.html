@@ -1,54 +1,20 @@
-async function loadReel() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id'); // This grabs whatever is in the URL (?id=xxxx)
+<script>
+const id = new URLSearchParams(window.location.search).get('id');
+const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
+const BASE = 'appMDAS9DBPWtBiYZ';
+const TABLE = 'tblvqMOioHwGPLIik';
 
-    if (!id) {
-        document.getElementById('loader').innerText = "❌ ERROR: NO ID FOUND";
-        return;
-    }
-
-    const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
-    const BASE = 'appMDAS9DBPWtBiYZ';
-    const TABLE = 'tblvqMOioHwGPLIik'; // Deliver Table
-    
-    // UPDATED: Now searches the "formId" column for whatever ID is in the URL
-    const formula = encodeURIComponent(`{formId}="${id}"`); 
+async function saveForInstagram() {
+    const formula = encodeURIComponent(`TRIM({formId})="${id.trim()}"`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
-
     try {
-        const res = await fetch(url, {
-            headers: { Authorization: `Bearer ${TOKEN}` }
-        });
+        const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
-
         if (data.records && data.records.length > 0) {
-            const fields = data.records[0].fields;
-            
-            // Map these to your EXACT Airtable column names
-            const videoUrl = fields['Video URL'];
-            const businessName = fields['Charter Name'] || "YOUR REEL";
-
-            if (videoUrl) {
-                document.getElementById('bizName').innerText = businessName.toUpperCase();
-                document.getElementById('video').src = videoUrl;
-                
-                let downloadUrl = videoUrl;
-                if (downloadUrl.includes('cloudinary')) {
-                    downloadUrl = downloadUrl.replace('/upload/', '/upload/fl_attachment/');
-                }
-                document.getElementById('dlBtn').href = downloadUrl;
-                document.getElementById('shareBtn').href = `send.html?id=${id}`;
-
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('main').style.display = 'flex';
-            } else {
-                document.getElementById('loader').innerHTML = "🎥 REEL IS STILL RENDERING...<br><br><small>Please refresh in 60 seconds.</small>";
-            }
-        } else {
-            // If Airtable returns 0 records for that ID
-            document.getElementById('loader').innerText = "❌ REEL NOT FOUND FOR ID: " + id;
+            let vUrl = data.records[0].fields['Video URL'];
+            if (vUrl.includes('cloudinary')) vUrl = vUrl.replace('/upload/', '/upload/fl_attachment/');
+            window.open(vUrl, '_blank');
         }
-    } catch (err) {
-        document.getElementById('loader').innerText = "⚠️ CONNECTION ERROR";
-    }
+    } catch (err) { console.error(err); }
 }
+</script>
