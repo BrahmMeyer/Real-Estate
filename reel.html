@@ -1,63 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Your Video</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --navy:#0A192F; --pearl:#FDFBF7; --accent:#E2E8F0; --gold-btn: #e0bf0b; --blue-grad: linear-gradient(135deg, #0A192F 0%, #0047AB 100%); }
+        * { box-sizing: border-box; }
+        body, html { height: 100%; margin: 0; background: var(--pearl); color: var(--navy); font-family: 'DM Sans', sans-serif; overflow: hidden; }
+        #loader { height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: bold; flex-direction: column; text-align: center; padding: 20px; }
+        #main { display: none; height: 100%; flex-direction: column; padding: 10px 20px; max-width: 450px; margin: 0 auto; text-align: center; }
+        .biz-name { font-size: 18px; font-weight: 900; margin: 15px 0; text-transform: uppercase; flex-shrink: 0; color: var(--navy); min-height: 24px; }
+        .content-area { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; width: 100%; }
+        .video-wrap { width: 100%; flex-grow: 1; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--accent); display: flex; align-items: center; position: relative; }
+        video { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .video-hint { font-size: 10px; font-weight: 700; color: var(--navy); opacity: 0.8; margin: 10px 0; letter-spacing: 0.5px; flex-shrink: 0; text-transform: uppercase; }
+        .button-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; flex-shrink: 0; width: 100%; }
+        .btn { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 13px; letter-spacing: 1px; cursor: pointer; display: block; text-transform: uppercase; text-decoration: none; text-align: center; border: none; font-family: 'DM Sans', sans-serif; }
+        #reviewBtn { background: var(--gold-btn); color: #000; display: none; }
+        .btn-grad { background: var(--blue-grad); color: #fff; }
+        .footer-main { font-size: 8px; padding-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; flex-shrink: 0; line-height: 1.6; font-weight: 700; }
+    </style>
+</head>
+<body>
+<div id="loader"><div id="loaderText">FINDING YOUR REEL...</div></div>
+<div id="main">
+    <div id="bizName" class="biz-name"></div>
+    <div class="content-area">
+        <div class="video-wrap"><video id="video" playsinline controls></video></div>
+        <div class="video-hint">PREVIEW — TAP FULLSCREEN FOR ORIGINAL SIZE</div>
+        <div class="button-group">
+            <a id="reviewBtn" class="btn" target="_blank">Leave Us A Review</a>
+            <button class="btn btn-grad" onclick="downloadVideo()">Download Reel</button>
+            <a id="shareBtn" class="btn btn-grad">Share</a>
+        </div>
+    </div>
+    <div class="footer-main">
+        STAY2REEL<br>
+        +27 (0) 68 364 4061<br>
+        listings2reels@gmail.com
+    </div>
+</div>
+
+<script>
 async function load() {
     const urlParams = new URLSearchParams(window.location.search);
     const rawId = urlParams.get('id');
+    if (!rawId) { document.getElementById('loaderText').innerText = "❌ ERROR: NO ID"; return; }
     
-    if (!rawId) { 
-        document.getElementById('loaderText').innerText = "❌ ERROR: NO ID"; 
-        return; 
-    }
-    
-    // Clean the ID
     const id = rawId.split(' ')[0].trim();
     
     const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
     const BASE = 'appMDAS9DBPWtBiYZ';
     const TABLE = 'tblvqMOioHwGPLIik';
     
-    // Construct URL with proper encoding for brackets
-    const baseUrl = `https://api.airtable.com/v0/${BASE}/${TABLE}`;
-    const filter = `filterByFormula=${encodeURIComponent(`{ID}="${id}"`)}`;
-    const sortField = `sort[0][field]=Created`;
-    const sortDir = `sort[0][direction]=desc`;
-    const cb = `cb=${Date.now()}`;
-    
-    const finalUrl = `${baseUrl}?${filter}&${sortField}&${sortDir}&${cb}`;
+    const formula = encodeURIComponent(`{ID}="${id}"`);
+    // Sorting specifically by your "Created" column in descending order
+    const sort = encodeURIComponent('sort[0][field]=Created&sort[0][direction]=desc');
+    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&${sort}`;
 
     try {
-        const res = await fetch(finalUrl, { 
-            headers: { Authorization: `Bearer ${TOKEN}` } 
-        });
+        const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
         
         if (data.records && data.records.length > 0) {
-            // Because we sorted DESC, the first record is the newest
-            const f = data.records[0].fields;
-            
-            document.getElementById('bizName').innerText = (f['Charter Name'] || "YOUR REEL").toUpperCase();
-            
-            if (f['Video URL']) {
-                document.getElementById('video').src = f['Video URL'];
-            }
-            
-            if (f['Review']) {
-                const link = Array.isArray(f['Review']) ? f['Review'][0] : f['Review'];
-                if (link.toString().includes('http')) {
-                    const reviewBtn = document.getElementById('reviewBtn');
-                    reviewBtn.href = link;
-                    reviewBtn.style.display = 'block';
-                }
-            }
-            
-            document.getElementById('shareBtn').href = `send.html?id=${id}`;
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('main').style.display = 'flex';
+            // Because we sorted 'desc', index 0 is always the most recent entry
+            displayReel(data.records[0].fields, id);
         } else {
-            document.getElementById('loaderText').innerText = "❌ REEL NOT FOUND";
+            // Fallback: If sorting fails or yields no results, try one last time without the sort
+            const fallbackUrl = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}`;
+            const fbRes = await fetch(fallbackUrl, { headers: { Authorization: `Bearer ${TOKEN}` } });
+            const fbData = await fbRes.json();
+            
+            if (fbData.records && fbData.records.length > 0) {
+                displayReel(fbData.records[fbData.records.length - 1].fields, id);
+            } else {
+                document.getElementById('loaderText').innerText = "❌ REEL NOT FOUND";
+            }
         }
     } catch (err) {
-        console.error(err);
         document.getElementById('loaderText').innerText = "⚠️ CONNECTION ERROR";
     }
 }
 
+function displayReel(f, id) {
+    document.getElementById('bizName').innerText = (f['Charter Name'] || "YOUR REEL").toUpperCase();
+    if (f['Video URL']) document.getElementById('video').src = f['Video URL'];
+    
+    if (f['Review']) {
+        const link = Array.isArray(f['Review']) ? f['Review'][0] : f['Review'];
+        if (link.toString().includes('http')) {
+            document.getElementById('reviewBtn').href = link;
+            document.getElementById('reviewBtn').style.display = 'block';
+        }
+    }
+    document.getElementById('shareBtn').href = `send.html?id=${id}`;
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('main').style.display = 'flex';
+}
+
+function downloadVideo() {
+    let vUrl = document.getElementById('video').src;
+    if (vUrl && vUrl.includes('cloudinary')) {
+        vUrl = vUrl.replace('/upload/', '/upload/fl_attachment/');
+        window.open(vUrl, '_blank');
+    }
+}
+
 load();
+</script>
+</body>
+</html>
