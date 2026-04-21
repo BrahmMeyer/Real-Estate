@@ -15,10 +15,45 @@
             --x-corp: #2C2C2C; 
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--pearl); font-family: 'DM Sans', sans-serif; text-align: center; padding: 60px 20px 40px 20px; color: var(--navy); min-height: 100vh; display: flex; flex-direction: column; }
+        body { 
+            background: var(--pearl); 
+            font-family: 'DM Sans', sans-serif; 
+            text-align: center; 
+            padding: 60px 20px 40px 20px; 
+            color: var(--navy); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+        }
         
-        .button-stack { width: 100%; max-width: 320px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
-        .btn { width: 100%; padding: 16px; border-radius: 10px; cursor: pointer; border: none; font-weight: 700; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: #fff; display: flex; align-items: center; justify-content: center; gap: 12px; text-decoration: none; transition: opacity 0.2s; }
+        .button-stack { 
+            width: 100%; 
+            max-width: 320px; 
+            margin: 0 auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            flex-grow: 1; 
+        }
+        
+        .btn { 
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            border: none; 
+            font-weight: 700; 
+            font-size: 12px; 
+            letter-spacing: 1px; 
+            text-transform: uppercase; 
+            color: #fff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            text-decoration: none; 
+            transition: opacity 0.2s; 
+        }
         
         .btn-wa { background: var(--whatsapp); }
         .btn-fb { background: var(--facebook); }
@@ -28,7 +63,16 @@
         .btn:active { opacity: 0.8; transform: translateY(1px); }
         svg { width: 18px; height: 18px; fill: #fff; }
         
-        .footer-info { margin-top: 50px; font-size: 8px; opacity: 0.6; letter-spacing: 1px; font-weight: 700; text-transform: uppercase; line-height: 1.6; padding-bottom: 20px; }
+        .footer-info { 
+            margin-top: 50px; 
+            font-size: 8px; 
+            opacity: 0.6; 
+            letter-spacing: 1px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            line-height: 1.6; 
+            padding-bottom: 20px; 
+        }
     </style>
 </head>
 <body>
@@ -64,15 +108,16 @@
 <script>
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('id');
+
 const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
 const BASE = 'appMDAS9DBPWtBiYZ';
 const TABLE = 'tblvqMOioHwGPLIik';
 
-// Helper to fetch only the latest record
+// Helper: Always fetch the most recent entry for this ID
 async function fetchLatestVideo() {
     if (!id) return null;
     const cleanId = id.split(' ')[0].trim();
-    // Cache buster included to stop "old video" issues
+    // Cache bust + sorting by Created Descending
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula={ID}="${cleanId}"&sort[0][field]=Created&sort[0][direction]=desc&cb=${Date.now()}`;
     
     try {
@@ -85,26 +130,34 @@ async function fetchLatestVideo() {
 }
 
 function shareWhatsApp() {
-    const msg = `Check out my reel: https://delivery.rod2reel.com/reel.html?id=${id}`;
+    const reelURL = `https://delivery.rod2reel.com/reel.html?id=${id}`;
+    const msg = `Check out my reel: ${reelURL}`;
     window.location.href = `whatsapp://send?text=${encodeURIComponent(msg)}`;
 }
 
 function shareSocial(platform) {
     const reelURL = `https://delivery.rod2reel.com/reel.html?id=${id}`;
+    const text = encodeURIComponent("Check out this highlight reel! 🎣");
+    
     let shareUrl = "";
-    if (platform === 'Facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(reelURL)}`;
-    if (platform === 'X') shareUrl = `https://x.com/intent/tweet?url=${encodeURIComponent(reelURL)}&text=Check%20out%20my%20highlight%20reel!`;
+    if (platform === 'Facebook') {
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(reelURL)}`;
+    }
+    if (platform === 'X') {
+        shareUrl = `https://x.com/intent/tweet?url=${encodeURIComponent(reelURL)}&text=${text}`;
+    }
+    
     window.open(shareUrl, '_blank');
 }
 
 async function saveForInstagram() {
     const fields = await fetchLatestVideo();
     if (fields && fields['Video URL']) {
-        // Forces the browser to download the file instead of just playing it
+        // Force the download attachment
         let vUrl = fields['Video URL'].replace('/upload/', '/upload/fl_attachment/');
         window.open(vUrl, '_blank');
     } else {
-        alert("Video still processing... please try again in a moment.");
+        alert("Video still processing... try again in 30 seconds.");
     }
 }
 </script>
