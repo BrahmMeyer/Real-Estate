@@ -54,20 +54,16 @@ async function load() {
     const BASE = 'appMDAS9DBPWtBiYZ';
     const TABLE = 'tblvqMOioHwGPLIik';
     
-    // We add a random 'cb' (Cache Buster) to the Airtable request
     const cb = Date.now();
-    const formula = encodeURIComponent(`{ID}="${id}"`);
-    const sortField = `sort[0][field]=Created`;
-    const sortDir = `sort[0][direction]=desc`;
-    
-    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&${sortField}&${sortDir}&cb=${cb}`;
+    // CRITICAL FIX: Searching by Video ID instead of Lodge ID
+    const formula = encodeURIComponent(`{Video ID}="${id}"`);
+    const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&cb=${cb}`;
 
     try {
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
         
         if (data.records && data.records.length > 0) {
-            // Index 0 is the newest record because of sort=desc
             displayReel(data.records[0].fields, id, cb);
         } else {
             document.getElementById('loaderText').innerText = "❌ REEL NOT FOUND";
@@ -81,7 +77,6 @@ function displayReel(f, id, cb) {
     document.getElementById('bizName').innerText = (f['Charter Name'] || "YOUR REEL").toUpperCase();
     
     if (f['Video URL']) {
-        // We add the cache-buster timestamp to the video URL to force the phone to reload the new file
         document.getElementById('video').src = f['Video URL'] + "?v=" + cb;
     }
     
@@ -100,7 +95,6 @@ function displayReel(f, id, cb) {
 function downloadVideo() {
     let vUrl = document.getElementById('video').src;
     if (vUrl && vUrl.includes('cloudinary')) {
-        // Remove the cache-buster from the URL before adding the attachment flag
         let cleanUrl = vUrl.split('?')[0];
         let downloadUrl = cleanUrl.replace('/upload/', '/upload/fl_attachment/');
         window.open(downloadUrl, '_blank');
