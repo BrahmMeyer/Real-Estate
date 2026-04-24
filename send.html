@@ -6,17 +6,25 @@
     <title>Share Your Reel</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --navy:#0A192F; --pearl:#FDFBF7; --whatsapp: #25D366; --facebook: #1877F2; --instagram: #E4405F; --x-corp: #000000; }
+        :root { 
+            --navy:#0A192F; 
+            --pearl:#FDFBF7; 
+            --whatsapp: #4A5D4E; /* Restored Muted Safari Green */
+            --facebook: #3B4A6B; /* Restored Muted Navy */
+            --instagram: #8C6A5E; /* Restored Copper/Brown */
+            --x-corp: #2C2C2C; /* Restored Dark Grey */
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: var(--pearl); font-family: 'DM Sans', sans-serif; text-align: center; padding: 60px 20px; color: var(--navy); min-height: 100vh; display: flex; flex-direction: column; }
         .button-stack { width: 100%; max-width: 320px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
-        .btn { width: 100%; padding: 16px; border-radius: 10px; cursor: pointer; border: none; font-weight: 700; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: #fff; display: flex; align-items: center; justify-content: center; gap: 12px; text-decoration: none; }
+        .btn { width: 100%; padding: 16px; border-radius: 10px; cursor: pointer; border: none; font-weight: 700; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: #fff; display: flex; align-items: center; justify-content: center; gap: 12px; text-decoration: none; transition: opacity 0.2s; }
         .btn-wa { background: var(--whatsapp); }
         .btn-fb { background: var(--facebook); }
         .btn-x { background: var(--x-corp); }
         .btn-ig { background: var(--instagram); }
-        .btn:disabled { opacity: 0.5; }
-        .footer-info { margin-top: 50px; font-size: 8px; opacity: 0.6; letter-spacing: 1px; font-weight: 700; text-transform: uppercase; line-height: 1.6; }
+        .btn:disabled { opacity: 0.5; cursor: wait; }
+        .btn:active { opacity: 0.8; transform: translateY(1px); }
+        .footer-info { margin-top: 50px; font-size: 8px; opacity: 0.6; letter-spacing: 1px; font-weight: 700; text-transform: uppercase; line-height: 1.6; padding-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -63,6 +71,7 @@ function shareSocial(platform) {
 async function saveForInstagram() {
     const btn = document.getElementById('igBtn');
     btn.disabled = true;
+    const originalText = btn.innerText;
     btn.innerText = "PREPARING...";
     
     const fields = await fetchLatestVideo();
@@ -77,13 +86,13 @@ async function saveForInstagram() {
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
-            btn.innerText = "SAVE FOR INSTAGRAM";
         } catch (e) {
             window.open(fields['Video URL'], '_blank');
         }
     } else {
         alert("Video loading... please wait 5 seconds.");
     }
+    btn.innerText = originalText;
     btn.disabled = false;
 }
 </script>
