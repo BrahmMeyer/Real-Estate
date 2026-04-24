@@ -15,7 +15,7 @@
         .btn-fb { background: var(--facebook); }
         .btn-x { background: var(--x-corp); }
         .btn-ig { background: var(--instagram); }
-        svg { width: 18px; height: 18px; fill: #fff; }
+        .btn:disabled { opacity: 0.5; }
         .footer-info { margin-top: 50px; font-size: 8px; opacity: 0.6; letter-spacing: 1px; font-weight: 700; text-transform: uppercase; line-height: 1.6; }
     </style>
 </head>
@@ -24,26 +24,25 @@
         <button class="btn btn-wa" onclick="shareWhatsApp()">Send via WhatsApp</button>
         <button class="btn btn-fb" onclick="shareSocial('Facebook')">Post to Facebook</button>
         <button class="btn btn-x" onclick="shareSocial('X')">Post to X</button>
-        <button class="btn btn-ig" onclick="saveForInstagram()">Save for Instagram</button>
+        <button id="igBtn" class="btn btn-ig" onclick="saveForInstagram()">Save for Instagram</button>
     </div>
     <div class="footer-info">STAY2REEL<br>+27 (0) 68 364 4061<br>listings2reels@gmail.com</div>
 
 <script>
 const urlParams = new URLSearchParams(window.location.search);
-const id = urlParams.get('id');
+const id = urlParams.get('id')?.split(' ')[0].trim();
 const TOKEN = 'patcg5qiA5GY0C9dG.99f8e22ce623b22372b0654d341ee3d6164160d11e591f28d7d4d26b76ea2589';
 const BASE = 'appMDAS9DBPWtBiYZ';
 const TABLE = 'tblvqMOioHwGPLIik';
 
 async function fetchLatestVideo() {
     if (!id) return null;
-    const cleanId = id.split(' ')[0].trim();
-    const formula = encodeURIComponent(`{Video ID}="${cleanId}"`);
+    const formula = encodeURIComponent(`{Video ID}="${id}"`);
     const url = `https://api.airtable.com/v0/${BASE}/${TABLE}?filterByFormula=${formula}&sort[0][field]=Created&sort[0][direction]=desc&cb=${Date.now()}`;
     try {
         const res = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
         const data = await res.json();
-        return data.records && data.records.length > 0 ? data.records[0].fields : null;
+        return data.records?.[0]?.fields || null;
     } catch (e) { return null; }
 }
 
@@ -62,17 +61,30 @@ function shareSocial(platform) {
 }
 
 async function saveForInstagram() {
+    const btn = document.getElementById('igBtn');
+    btn.disabled = true;
+    btn.innerText = "PREPARING...";
+    
     const fields = await fetchLatestVideo();
     if (fields && fields['Video URL']) {
-        const link = document.createElement('a');
-        link.href = fields['Video URL'];
-        link.setAttribute('download', 'SafariReel.mp4');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        try {
+            const response = await fetch(fields['Video URL']);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "SafariReel.mp4";
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            btn.innerText = "SAVE FOR INSTAGRAM";
+        } catch (e) {
+            window.open(fields['Video URL'], '_blank');
+        }
     } else {
-        alert("Video still processing... try again in 5 seconds.");
+        alert("Video loading... please wait 5 seconds.");
     }
+    btn.disabled = false;
 }
 </script>
 </body>
